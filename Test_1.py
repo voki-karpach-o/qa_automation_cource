@@ -90,31 +90,31 @@ if flag_expression is False:
         else:
             break
 
-if flag_sp is False:
-    while True:
-        num_2 = input('Введи цифру: ')
+    if flag_sp is False:
+        while True:
+            num_2 = input('Введи цифру: ')
 
-        # проверка на наличие букв
-        for n in num_2:
-            n.replace('.', '', 1)
-            if n.isalpha():
-                flag_letters = True
-                break
-            elif n == '.':
-                flag_dot = True
-                break
-        if flag_letters is True or flag_dot is True:
-            print('Недопустимая операция!')
-            flag_letters = False
-            flag_dot = False
-            continue
-        else:
-            if '.' in num_2:
-                num_2 = float(num_2)
-                break
-            elif '.' not in num_2:
-                num_2 = int(num_2)
-                break
+            # проверка на наличие букв
+            for n in num_2:
+                n.replace('.', '', 1)
+                if n.isalpha():
+                    flag_letters = True
+                    break
+                elif n == '.':
+                    flag_dot = True
+                    break
+            if flag_letters is True or flag_dot is True:
+                print('Недопустимая операция!')
+                flag_letters = False
+                flag_dot = False
+                continue
+            else:
+                if '.' in num_2:
+                    num_2 = float(num_2)
+                    break
+                elif '.' not in num_2:
+                    num_2 = int(num_2)
+                    break
 
 # вызов функции, если в строку ввода ввели не выражение а число
 if flag_expression is False:
