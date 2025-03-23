@@ -1,17 +1,17 @@
 import re
 
 
-def calc_multiply(first, second=None):
+def calc_multiply(first, second):
     s = first * second
     print(s)
 
 
-def calc_divide(first, second=None):
+def calc_divide(first, second):
     s = first / second
     print(s)
 
 
-def calc_subtract(first, second=None):
+def calc_subtract(first, second):
     s = first - second
     print(s)
 
@@ -34,6 +34,7 @@ pattern = r'^(\d+(\.\d+)?)([+\-*/])(\d+(\.\d+)?)$'
 flag_expression = False
 flag_letters = False
 flag_dot = False
+flag_sp = False
 
 # объявление переменных чтобы не ругался на отсутсвие operation и num_2 в 90 строке
 operation = None
@@ -68,7 +69,11 @@ while True:
             flag_dot = False
             continue
         else:
-            if '.' in num_1:
+            if len(num_1) > 1 and ' ' in num_1:
+                num_1 = [int(n) for n in num_1.split()]
+                flag_sp = True
+                break
+            elif '.' in num_1:
                 num_1 = float(num_1)
                 break
             elif '.' not in num_1:
@@ -85,6 +90,7 @@ if flag_expression is False:
         else:
             break
 
+if flag_sp is False:
     while True:
         num_2 = input('Введи цифру: ')
 
@@ -112,4 +118,7 @@ if flag_expression is False:
 
 # вызов функции, если в строку ввода ввели не выражение а число
 if flag_expression is False:
-    operations[operation](num_1, num_2)
+    if flag_sp:
+        operations[operation](num_1)
+    else:
+        operations[operation](num_1, num_2)
