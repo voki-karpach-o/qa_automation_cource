@@ -32,3 +32,21 @@ class MemoryCalc(BasicCalc):
         result = first / second
         self.last_result = result
         print(result)
+
+
+operations = {
+    '+': MemoryCalc.calc_add,
+    '-': MemoryCalc.calc_subtract,
+    '*': MemoryCalc.calc_multiply,
+    '/': MemoryCalc.calc_divide
+}
+
+operation = None
+
+
+calc = MemoryCalc()
+
+num_2 = input("Введите второе число или Enter для использования памяти числа из памяти: ")
+
+
+calc.calc_add(2)
