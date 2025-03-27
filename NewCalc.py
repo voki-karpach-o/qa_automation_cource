@@ -3,6 +3,14 @@ import re
 
 
 class NewCalc(BasicCalc):
+    memory = []
+
+    def __init__(self):
+        self.flag_expression = False
+        self.flag_letters = False
+        self.flag_dot = False
+        self.flag_sp = False
+        self.operation = None
 
     @staticmethod
     def calc_multiply(first, second=None):
@@ -11,8 +19,8 @@ class NewCalc(BasicCalc):
         s = first * second
         print(s)
         BasicCalc.last_result = s
-        BasicCalc.memo_plus(s)
-        BasicCalc.memo_minus()
+        NewCalc.memo_plus(s)
+        NewCalc.memo_minus()
 
     @staticmethod
     def calc_divide(first, second=None):
@@ -21,8 +29,8 @@ class NewCalc(BasicCalc):
         s = first / second
         print(s)
         BasicCalc.last_result = s
-        BasicCalc.memo_plus(s)
-        BasicCalc.memo_minus()
+        NewCalc.memo_plus(s)
+        NewCalc.memo_minus()
 
     @staticmethod
     def calc_subtract(first, second=None):
@@ -31,8 +39,8 @@ class NewCalc(BasicCalc):
         s = first - second
         print(s)
         BasicCalc.last_result = s
-        BasicCalc.memo_plus(s)
-        BasicCalc.memo_minus()
+        NewCalc.memo_plus(s)
+        NewCalc.memo_minus()
 
     @staticmethod
     def calc_add(first, second=None):
@@ -45,18 +53,18 @@ class NewCalc(BasicCalc):
             s = first + second
         print(s)
         BasicCalc.last_result = s
-        BasicCalc.memo_plus(s)
-        BasicCalc.memo_minus()
+        NewCalc.memo_plus(s)
+        NewCalc.memo_minus()
 
     @staticmethod
     def memo_plus(number=None):
         while True:
             add_number = input(
                 'Если нужно добавить число, напиши "добавить", если не надо то напиши "не добавлять" ').lower()
-            if add_number == 'добавить' and len(BasicCalc.memory) < 3:
-                BasicCalc.memory.append(number)
+            if add_number == 'добавить' and len(NewCalc.memory) < 3:
+                NewCalc.memory.append(number)
                 break
-            elif add_number == 'добавить' and len(BasicCalc.memory) == 3:
+            elif add_number == 'добавить' and len(NewCalc.memory) == 3:
                 print('Невозможно добавить, сейчас уже 3 значения в памяти!')
                 break
             elif add_number == 'не добавлять':
@@ -70,8 +78,8 @@ class NewCalc(BasicCalc):
             remove_number = input(
                 'Если нужно убрать последнее число, напиши "убрать", '
                 'если не нужно убирать то напиши "не убирать" ').lower()
-            if remove_number == 'убрать' and len(BasicCalc.memory) > 0:
-                BasicCalc.memory.pop()
+            if remove_number == 'убрать' and len(NewCalc.memory) > 0:
+                NewCalc.memory.pop()
                 break
             elif remove_number == 'не убирать':
                 break
@@ -110,7 +118,7 @@ class NewCalc(BasicCalc):
                 first_num, _, operation, second_num, _ = match.groups()
                 first_num = float(first_num) if '.' in first_num else int(first_num)
                 second_num = float(second_num) if '.' in second_num else int(second_num)
-                getattr(BasicCalc, BasicCalc.operations[operation])(first_num, second_num)
+                getattr(self.__class__, self.operations[operation])(first_num, second_num)
                 self.flag_expression = True
                 break
             else:
@@ -178,20 +186,20 @@ class NewCalc(BasicCalc):
 
         if self.flag_expression is False:
             if self.flag_sp:
-                getattr(BasicCalc, self.operations[self.operation])(num_1)
+                getattr(self.__class__, self.operations[self.operation])(num_1)
             else:
-                getattr(BasicCalc, self.operations[self.operation])(num_1, num_2)
+                getattr(self.__class__, self.operations[self.operation])(num_1, num_2)
 
 
-calc = BasicCalc()
+calc = NewCalc()
 while True:
-    start_off_value_input = input('Напиши "ON" чтобы начать или продолжить, "OFF" чтобы выйти, "Значение", '
+    start_off_value_input = input('Введи "Продолжить" чтобы продолжить, "Выйти" чтобы выйти, "Значение", '
                                   'чтобы вывести верхнее значение: ').strip().upper()
-    if start_off_value_input == 'ON':
+    if start_off_value_input == 'ПРОДОЛЖИТЬ':
         calc.run()
-    elif start_off_value_input == 'OFF':
+    elif start_off_value_input == 'ВЫЙТИ':
         break
     elif start_off_value_input == 'ЗНАЧЕНИЕ':
         print(calc.top_memory)
     else:
-        print('Введите только "ON" или "OFF"')
+        print('Введите только "ON", "OFF" или "Значение"!')
