@@ -1,15 +1,8 @@
+from basic_calc import BasicCalc
 import re
 
 
-class BasicCalc:
-    last_result = 0
-    pattern = r'^(\d+(\.\d+)?)([+\-*/])(\d+(\.\d+)?)$'
-
-    def __init__(self):
-        self.flag_expression = False
-        self.flag_letters = False
-        self.flag_dot = False
-        self.flag_sp = False
+class NewCalc(BasicCalc):
 
     @staticmethod
     def calc_multiply(first, second=None):
@@ -18,6 +11,8 @@ class BasicCalc:
         s = first * second
         print(s)
         BasicCalc.last_result = s
+        BasicCalc.memo_plus(s)
+        BasicCalc.memo_minus()
 
     @staticmethod
     def calc_divide(first, second=None):
@@ -26,6 +21,8 @@ class BasicCalc:
         s = first / second
         print(s)
         BasicCalc.last_result = s
+        BasicCalc.memo_plus(s)
+        BasicCalc.memo_minus()
 
     @staticmethod
     def calc_subtract(first, second=None):
@@ -34,6 +31,8 @@ class BasicCalc:
         s = first - second
         print(s)
         BasicCalc.last_result = s
+        BasicCalc.memo_plus(s)
+        BasicCalc.memo_minus()
 
     @staticmethod
     def calc_add(first, second=None):
@@ -46,6 +45,52 @@ class BasicCalc:
             s = first + second
         print(s)
         BasicCalc.last_result = s
+        BasicCalc.memo_plus(s)
+        BasicCalc.memo_minus()
+
+    @staticmethod
+    def memo_plus(number=None):
+        while True:
+            add_number = input(
+                'Если нужно добавить число, напиши "добавить", если не надо то напиши "не добавлять" ').lower()
+            if add_number == 'добавить' and len(BasicCalc.memory) < 3:
+                BasicCalc.memory.append(number)
+                break
+            elif add_number == 'добавить' and len(BasicCalc.memory) == 3:
+                print('Невозможно добавить, сейчас уже 3 значения в памяти!')
+                break
+            elif add_number == 'не добавлять':
+                break
+            else:
+                print('Вы ввели неправильный текст!')
+
+    @staticmethod
+    def memo_minus():
+        while True:
+            remove_number = input(
+                'Если нужно убрать последнее число, напиши "убрать", '
+                'если не нужно убирать то напиши "не убирать" ').lower()
+            if remove_number == 'убрать' and len(BasicCalc.memory) > 0:
+                BasicCalc.memory.pop()
+                break
+            elif remove_number == 'не убирать':
+                break
+            else:
+                print('Значений в памяти нет!')
+                break
+
+    def reset_flags(self):
+        self.flag_expression = False
+        self.flag_letters = False
+        self.flag_dot = False
+        self.flag_sp = False
+
+    @property
+    def top_memory(self):
+        if len(self.memory) > 0:
+            return self.memory[-1]
+        else:
+            return 'Список пуст!'
 
     operations = {
         '+': 'calc_add',
@@ -55,6 +100,7 @@ class BasicCalc:
     }
 
     def run(self):
+        self.reset_flags()
         num_2 = None
         while True:
             num_1 = input('Введи цифру или математическое выражение без пробелов: ')
@@ -139,10 +185,13 @@ class BasicCalc:
 
 calc = BasicCalc()
 while True:
-    exit_input = input('Напиши "ON" чтобы начать или продолжить, или "OFF" чтобы выйти: ').strip().upper()
-    if exit_input == 'ON':
+    start_off_value_input = input('Напиши "ON" чтобы начать или продолжить, "OFF" чтобы выйти, "Значение", '
+                                  'чтобы вывести верхнее значение: ').strip().upper()
+    if start_off_value_input == 'ON':
         calc.run()
-    elif exit_input == 'OFF':
+    elif start_off_value_input == 'OFF':
         break
+    elif start_off_value_input == 'ЗНАЧЕНИЕ':
+        print(calc.top_memory)
     else:
         print('Введите только "ON" или "OFF"')
