@@ -2,6 +2,10 @@ import re
 
 
 class BasicCalc:
+    last_result = 0
+    memory = []
+    pattern = r'^(\d+(\.\d+)?)([+\-*/])(\d+(\.\d+)?)$'
+
     @staticmethod
     def calc_multiply(first, second=None):
         s = first * second
@@ -24,6 +28,23 @@ class BasicCalc:
         else:
             print(first + second)
 
+    @staticmethod
+    def memo_plus(number=None):
+        pass
+
+    @staticmethod
+    def memo_minus():
+        pass
+
+    @property
+    def top_memory(self):
+        if self.memory:
+            return self.memory[-1]
+        return 'Список пуст!'
+
+    def run(self):
+        pass
+
 
 operations = {
     '+': BasicCalc.calc_add,
@@ -32,22 +53,18 @@ operations = {
     '/': BasicCalc.calc_divide
 }
 
-pattern = r'^(\d+(\.\d+)?)([+\-*/])(\d+(\.\d+)?)$'
+pattern = BasicCalc.pattern
 flag_expression = False
 flag_letters = False
 flag_dot = False
 flag_sp = False
-
-# объявление переменных чтобы не ругался на отсутсвие operation и num_2 в 90 строке
 operation = None
 num_2 = None
 
-# ввод и проверка введенных данных
 while True:
     num_1 = input('Введи цифру или математическое выражение без пробелов: ')
     match = re.fullmatch(pattern, num_1)
 
-    # проверка на ввод выражения в строку
     if match:
         first_num, _, operation, second_num, _ = match.groups()
         first_num = float(first_num) if '.' in first_num else int(first_num)
@@ -56,7 +73,6 @@ while True:
         flag_expression = True
         break
     else:
-        # проверка на наличие букв
         for n in num_1:
             n.replace('.', '', 1)
             if n.isalpha():
@@ -82,7 +98,6 @@ while True:
                 num_1 = int(num_1)
                 break
 
-# если в строку ввода ввели не выражение а число
 if flag_expression is False:
     while True:
         operation = input('Выберите знак математической операции: +, -, *, /  ')
@@ -95,7 +110,6 @@ if flag_expression is False:
     if flag_sp is False:
         while True:
             num_2 = input('Введи цифру: ')
-            # проверка на наличие букв
             for n in num_2:
                 n.replace('.', '', 1)
                 if n.isalpha():
@@ -117,7 +131,6 @@ if flag_expression is False:
                     num_2 = int(num_2)
                     break
 
-# вызов функции, если в строку ввода ввели не выражение а число
 if flag_expression is False:
     if flag_sp:
         operations[operation](num_1)
