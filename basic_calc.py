@@ -122,7 +122,7 @@ if flag_expression is False:
                     flag_dot = True
                     break
             if flag_letters is True or flag_dot is True:
-                print('Недопустимая операция!')
+                print('Hедопустимая операция!')
                 flag_letters = False
                 flag_dot = False
                 continue

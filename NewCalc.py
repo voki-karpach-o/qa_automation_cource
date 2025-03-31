@@ -88,7 +88,7 @@ class NewCalc(BasicCalc):
                 else:
                     raise ValueError('значений в памяти нет!')
             except ValueError as e:
-                print(f'Ошибка: {e} Повторите ввод.')
+                print(f'Ошибка: {e} Повторите ввод!')
 
     def reset_flags(self):
         self.flag_expression = False
