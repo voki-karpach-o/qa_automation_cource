@@ -13,8 +13,11 @@ class BasicCalc:
 
     @staticmethod
     def calc_divide(first, second=None):
-        s = first / second
-        print(s)
+        try:
+            s = first / second
+            print(s)
+        except ZeroDivisionError:
+            print("Деление на ноль!")
 
     @staticmethod
     def calc_subtract(first, second=None):
