@@ -122,3 +122,4 @@ if flag_expression is False:
         operations[operation](num_1)
     else:
         operations[operation](num_1, num_2)
+
