@@ -5,12 +5,11 @@ import re
 class NewCalc(BasicCalc):
     memory = []
 
-    @staticmethod
-    def log_operation(operation_type, arguments, result):
+    def log_operation(self, operation_type, arguments, result_val):
         log_entry = {
             "Операция": operation_type,
             "Аргументы": arguments,
-            "Результат": result
+            "Результат": result_val
         }
         with open("calculator_log.txt", "a", encoding="utf-8") as log_file_op:
             log_file_op.write(str(log_entry) + "\n")
@@ -31,8 +30,8 @@ class NewCalc(BasicCalc):
                     break
                 else:
                     raise ValueError('Ожидалось "добавить" или "не добавлять"')
-            except ValueError as ve:
-                print(f'Ошибка: {ve}. Повторите ввод.')
+            except ValueError as val_err_plus:
+                print(f'Ошибка: {val_err_plus}. Повторите ввод.')
 
     @staticmethod
     def memo_minus():
@@ -48,8 +47,8 @@ class NewCalc(BasicCalc):
                     break
                 else:
                     raise ValueError('Значений в памяти нет!')
-            except ValueError as ve:
-                print(f'Ошибка: {ve} Повторите ввод!')
+            except ValueError as val_err_minus:
+                print(f'Ошибка: {val_err_minus} Повторите ввод!')
 
     def reset_flags(self):
         self.flag_expression = False
@@ -65,20 +64,21 @@ class NewCalc(BasicCalc):
     def check_input(self):
         match = re.fullmatch(self.pattern, self.num_1)
         if match:
-            first_num, _, operation, second_num, _ = match.groups()
+            first_num, _, op, second_num, _ = match.groups()
             first_num = float(first_num)
             second_num = float(second_num)
-            res = self.operations[operation](first_num, second_num)
-            print(res)
+            result_expr = self.operations[op](first_num, second_num)
+            print(result_expr)
             self.flag_expression = True
-            self.last_result = res
-            BasicCalc.last_result = res
-            return res
+            self.last_result = result_expr
+            BasicCalc.last_result = result_expr
+            self.log_operation("выражение", (first_num, second_num), result_expr)
+            return result_expr
 
         while True:
-            for n in self.num_1:
-                n.replace('.', '', 1)
-                if n.isalpha() or n == '.':
+            for ch in self.num_1:
+                ch.replace('.', '', 1)
+                if ch.isalpha() or ch == '.':
                     print(f'Некорректное значение "{self.num_1}", заменено на 0')
                     self.num_1 = '0'
                     break
@@ -93,9 +93,9 @@ class NewCalc(BasicCalc):
 
         while True:
             if self.flag_sp is False:
-                for n in self.num_2:
-                    n.replace('.', '', 1)
-                    if n.isalpha() or n == '.':
+                for ch in self.num_2:
+                    ch.replace('.', '', 1)
+                    if ch.isalpha() or ch == '.':
                         print(f'Некорректное значение "{self.num_2}", заменено на 0')
                         self.num_2 = '0'
                         break
@@ -114,13 +114,14 @@ while True:
         try:
             calc.set_info()
             calc.check_input()
-            operation_result = calc.calculate_result()
-            calc.log_operation(calc.operation, (calc.num_1, calc.num_2), operation_result)
-            calc.memo_plus(operation_result)
+            result_value = calc.calculate_result()
+            if not calc.flag_expression:
+                calc.log_operation(calc.operation, (calc.num_1, calc.num_2), result_value)
+            calc.memo_plus(result_value)
             calc.memo_minus()
-        except Exception as ex:
-            with open("calculator_log.txt", "a", encoding="utf-8") as log_file_err:
-                log_file_err.write(str({"Ошибка": str(ex)}) + "\n")
+        except Exception as main_err:
+            with open("calculator_log.txt", "a", encoding="utf-8") as log_f_err:
+                log_f_err.write(str({"Ошибка": str(main_err)}) + "\n")
 
     elif start_off_value_input == 'ВЫЙТИ':
         break
