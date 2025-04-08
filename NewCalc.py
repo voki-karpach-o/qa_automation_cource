@@ -6,6 +6,16 @@ class NewCalc(BasicCalc):
     memory = []
 
     @staticmethod
+    def log_operation(operation_type, arguments, result):
+        log_entry = {
+            "Операция": operation_type,
+            "Аргументы": arguments,
+            "Результат": result
+        }
+        with open("calculator_log.txt", "a", encoding="utf-8") as log_file_op:
+            log_file_op.write(str(log_entry) + "\n")
+
+    @staticmethod
     def memo_plus(number=None):
         while True:
             try:
@@ -20,9 +30,9 @@ class NewCalc(BasicCalc):
                 elif add_number == 'не добавлять':
                     break
                 else:
-                    raise ValueError('ожидалось "добавить" или "не добавлять"')
-            except ValueError as e:
-                print(f'Ошибка: {e}. Повторите ввод.')
+                    raise ValueError('Ожидалось "добавить" или "не добавлять"')
+            except ValueError as ve:
+                print(f'Ошибка: {ve}. Повторите ввод.')
 
     @staticmethod
     def memo_minus():
@@ -37,9 +47,9 @@ class NewCalc(BasicCalc):
                 elif remove_number == 'не убирать':
                     break
                 else:
-                    raise ValueError('значений в памяти нет!')
-            except ValueError as e:
-                print(f'Ошибка: {e} Повторите ввод!')
+                    raise ValueError('Значений в памяти нет!')
+            except ValueError as ve:
+                print(f'Ошибка: {ve} Повторите ввод!')
 
     def reset_flags(self):
         self.flag_expression = False
@@ -97,15 +107,21 @@ class NewCalc(BasicCalc):
 calc = NewCalc()
 
 while True:
-    start_off_value_input = input('Введи "Начать или Продолжить" чтобы начать или продолжить, "Выйти" чтобы выйти, "Значение", ' 
+    start_off_value_input = input('Введи "Начать или Продолжить" чтобы начать или продолжить, "Выйти" чтобы выйти, "Значение", '
                                   'чтобы вывести верхнее значение: ').strip().upper()
 
-    if start_off_value_input == 'ПРОДОЛЖИТЬ' or start_off_value_input == 'НАЧАТЬ':
-        calc.set_info()
-        calc.check_input()
-        result = calc.calculate_result()
-        calc.memo_plus(result)
-        calc.memo_minus()
+    if start_off_value_input in ('ПРОДОЛЖИТЬ', 'НАЧАТЬ'):
+        try:
+            calc.set_info()
+            calc.check_input()
+            operation_result = calc.calculate_result()
+            calc.log_operation(calc.operation, (calc.num_1, calc.num_2), operation_result)
+            calc.memo_plus(operation_result)
+            calc.memo_minus()
+        except Exception as ex:
+            with open("calculator_log.txt", "a", encoding="utf-8") as log_file_err:
+                log_file_err.write(str({"Ошибка": str(ex)}) + "\n")
+
     elif start_off_value_input == 'ВЫЙТИ':
         break
     elif start_off_value_input == 'ЗНАЧЕНИЕ':
