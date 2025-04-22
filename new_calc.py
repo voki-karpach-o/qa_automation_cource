@@ -30,18 +30,14 @@ class NewCalc(BasicCalc):
     def memo_minus():
         while True:
             try:
-                remove_number = input(
-                    'Если нужно убрать последнее число, напиши "убрать", '
-                    'если не нужно убирать то напиши "не убирать" ').lower()
-                if remove_number == 'убрать' and len(NewCalc.memory) > 0:
-                    NewCalc.memory.pop()
-                    break
-                elif remove_number == 'не убирать':
-                    break
+                if NewCalc.memory:
+                    removed = NewCalc.memory.pop()
+                    print(f'Удалено значение: {removed}')
                 else:
-                    raise ValueError('Значений в памяти нет!')
-            except ValueError as val_err_minus:
-                print(f'Ошибка: {val_err_minus} Повторите ввод!')
+                    raise ValueError
+            except ValueError:
+                print('Значений в памяти нет!')
+                break
 
     def reset_flags(self):
         self.flag_expression = False
@@ -101,25 +97,24 @@ if __name__ == "__main__":
     calc = NewCalc()
 
     while True:
-        start_off_value_input = input('Введи "Начать или Продолжить" чтобы начать или продолжить, "Выйти" чтобы выйти, "Значение", '
-                                      'чтобы вывести верхнее значение: ').strip().upper()
+        start_off_value_input = input(
+            'Введи "Продолжить" чтобы продолжить, "Выйти" чтобы выйти, "Значение", '
+            '"Удалить" чтобы удалить последнее значение: ').strip().upper()
 
-        if start_off_value_input in ('ПРОДОЛЖИТЬ', 'НАЧАТЬ'):
-            try:
-                calc.set_info()
-                calc.check_input()
-                result_value = calc.calculate_result()
-                if not calc.flag_expression:
-                    calc.log_operation(calc.operation, (calc.num_1, calc.num_2), result_value)
-                calc.memo_plus(result_value)
-                calc.memo_minus()
-            except Exception as main_err:
-                with open("calculator_log.txt", "a", encoding="utf-8") as log_f_err:
-                    log_f_err.write(str({"Ошибка": str(main_err)}) + "\n")
+        if start_off_value_input == 'ПРОДОЛЖИТЬ':
+            calc.set_info()
+            result = calc.check_input()
 
+            if result is not None:
+                calc.memo_plus(result)
+            else:
+                result = calc.calculate_result()
+                calc.memo_plus(result)
+        elif start_off_value_input == 'УДАЛИТЬ':
+            calc.memo_minus()
         elif start_off_value_input == 'ВЫЙТИ':
             break
         elif start_off_value_input == 'ЗНАЧЕНИЕ':
             print(calc.top_memory)
         else:
-            print('Введите только "ON", "OFF" или "Значение"!')
+            print('Введите только "Продолжить", "Удалить", "Выйти" или "Значение"!')
