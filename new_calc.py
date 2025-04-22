@@ -9,20 +9,13 @@ class NewCalc(BasicCalc):
     def memo_plus(number=None):
         while True:
             try:
-                add_number = input(
-                    'Если нужно добавить число, напиши "добавить", если не надо то напиши "не добавлять" ').lower()
-                if add_number == 'добавить' and len(NewCalc.memory) < 3:
-                    NewCalc.memory.append(number)
-                    break
-                elif add_number == 'добавить' and len(NewCalc.memory) == 3:
-                    print('Невозможно добавить, сейчас уже 3 значения в памяти!')
-                    break
-                elif add_number == 'не добавлять':
-                    break
+                if len(NewCalc.memory) < 3:
+                    return NewCalc.memory.append(number)
                 else:
-                    raise ValueError('ожидалось "добавить" или "не добавлять"')
-            except ValueError as e:
-                print(f'Ошибка: {e}. Повторите ввод.')
+                    raise ValueError
+            except ValueError:
+                print('Все ячейки памяти заполнены, новые значения не будут сохраняться!')
+                break
 
     @staticmethod
     def memo_minus():
@@ -94,21 +87,22 @@ class NewCalc(BasicCalc):
                 break
 
 
-calc = NewCalc()
+if __name__ == "__main__":
+    calc = NewCalc()
 
-while True:
-    start_off_value_input = input('Введи "Начать или Продолжить" чтобы начать или продолжить, "Выйти" чтобы выйти, "Значение", ' 
-                                  'чтобы вывести верхнее значение: ').strip().upper()
+    while True:
+        start_off_value_input = input('Введи "Начать или Продолжить" чтобы начать или продолжить, "Выйти" чтобы выйти, "Значение", ' 
+                                      'чтобы вывести верхнее значение: ').strip().upper()
 
-    if start_off_value_input == 'ПРОДОЛЖИТЬ' or start_off_value_input == 'НАЧАТЬ':
-        calc.set_info()
-        calc.check_input()
-        result = calc.calculate_result()
-        calc.memo_plus(result)
-        calc.memo_minus()
-    elif start_off_value_input == 'ВЫЙТИ':
-        break
-    elif start_off_value_input == 'ЗНАЧЕНИЕ':
-        print(calc.top_memory)
-    else:
-        print('Введите только "ON", "OFF" или "Значение"!')
+        if start_off_value_input == 'ПРОДОЛЖИТЬ' or start_off_value_input == 'НАЧАТЬ':
+            calc.set_info()
+            calc.check_input()
+            result = calc.calculate_result()
+            calc.memo_plus(result)
+            calc.memo_minus()
+        elif start_off_value_input == 'ВЫЙТИ':
+            break
+        elif start_off_value_input == 'ЗНАЧЕНИЕ':
+            print(calc.top_memory)
+        else:
+            print('Введите только "ON", "OFF" или "Значение"!')
