@@ -18,20 +18,13 @@ class NewCalc(BasicCalc):
     def memo_plus(number=None):
         while True:
             try:
-                add_number = input(
-                    'Если нужно добавить число, напиши "добавить", если не надо то напиши "не добавлять" ').lower()
-                if add_number == 'добавить' and len(NewCalc.memory) < 3:
-                    NewCalc.memory.append(number)
-                    break
-                elif add_number == 'добавить' and len(NewCalc.memory) == 3:
-                    print('Невозможно добавить, сейчас уже 3 значения в памяти!')
-                    break
-                elif add_number == 'не добавлять':
-                    break
+                if len(NewCalc.memory) < 3:
+                    return NewCalc.memory.append(number)
                 else:
-                    raise ValueError('Ожидалось "добавить" или "не добавлять"')
-            except ValueError as val_err_plus:
-                print(f'Ошибка: {val_err_plus}. Повторите ввод.')
+                    raise ValueError
+            except ValueError:
+                print('Все ячейки памяти заполнены, новые значения не будут сохраняться!')
+                break
 
     @staticmethod
     def memo_minus():
@@ -104,28 +97,29 @@ class NewCalc(BasicCalc):
                 break
 
 
-calc = NewCalc()
+if __name__ == "__main__":
+    calc = NewCalc()
 
-while True:
-    start_off_value_input = input('Введи "Начать или Продолжить" чтобы начать или продолжить, "Выйти" чтобы выйти, "Значение", '
-                                  'чтобы вывести верхнее значение: ').strip().upper()
+    while True:
+        start_off_value_input = input('Введи "Начать или Продолжить" чтобы начать или продолжить, "Выйти" чтобы выйти, "Значение", '
+                                      'чтобы вывести верхнее значение: ').strip().upper()
 
-    if start_off_value_input in ('ПРОДОЛЖИТЬ', 'НАЧАТЬ'):
-        try:
-            calc.set_info()
-            calc.check_input()
-            result_value = calc.calculate_result()
-            if not calc.flag_expression:
-                calc.log_operation(calc.operation, (calc.num_1, calc.num_2), result_value)
-            calc.memo_plus(result_value)
-            calc.memo_minus()
-        except Exception as main_err:
-            with open("calculator_log.txt", "a", encoding="utf-8") as log_f_err:
-                log_f_err.write(str({"Ошибка": str(main_err)}) + "\n")
+        if start_off_value_input in ('ПРОДОЛЖИТЬ', 'НАЧАТЬ'):
+            try:
+                calc.set_info()
+                calc.check_input()
+                result_value = calc.calculate_result()
+                if not calc.flag_expression:
+                    calc.log_operation(calc.operation, (calc.num_1, calc.num_2), result_value)
+                calc.memo_plus(result_value)
+                calc.memo_minus()
+            except Exception as main_err:
+                with open("calculator_log.txt", "a", encoding="utf-8") as log_f_err:
+                    log_f_err.write(str({"Ошибка": str(main_err)}) + "\n")
 
-    elif start_off_value_input == 'ВЫЙТИ':
-        break
-    elif start_off_value_input == 'ЗНАЧЕНИЕ':
-        print(calc.top_memory)
-    else:
-        print('Введите только "ON", "OFF" или "Значение"!')
+        elif start_off_value_input == 'ВЫЙТИ':
+            break
+        elif start_off_value_input == 'ЗНАЧЕНИЕ':
+            print(calc.top_memory)
+        else:
+            print('Введите только "ON", "OFF" или "Значение"!')
