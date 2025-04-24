@@ -1,5 +1,16 @@
-from basic_calc import BasicCalc
 import re
+import time
+from basic_calc import BasicCalc
+
+
+class ExecutionTimer:
+    def __enter__(self):
+        self.start_time = time.time()
+        return self.start_time
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        duration = time.time() - self.start_time
+        print(f" Время выполнения операции: {duration:.4f} секунд")
 
 
 class NewCalc(BasicCalc):
@@ -16,28 +27,25 @@ class NewCalc(BasicCalc):
 
     @staticmethod
     def memo_plus(number=None):
-        while True:
-            try:
-                if len(NewCalc.memory) < 3:
-                    return NewCalc.memory.append(number)
-                else:
-                    raise ValueError
-            except ValueError:
-                print('Все ячейки памяти заполнены, новые значения не будут сохраняться!')
-                break
+        try:
+            if len(NewCalc.memory) < 3:
+                NewCalc.memory.append(number)
+                print(f'Добавлено значение: {number}')
+            else:
+                raise ValueError
+        except ValueError:
+            print('Все ячейки памяти заполнены, новые значения не будут сохраняться!')
 
     @staticmethod
     def memo_minus():
-        while True:
-            try:
-                if NewCalc.memory:
-                    removed = NewCalc.memory.pop()
-                    print(f'Удалено значение: {removed}')
-                else:
-                    raise ValueError
-            except ValueError:
-                print('Значений в памяти нет!')
-                break
+        try:
+            if NewCalc.memory:
+                removed = NewCalc.memory.pop()
+                print(f'Удалено значение: {removed}')
+            else:
+                raise ValueError
+        except ValueError:
+            print('Значений в памяти нет!')
 
     def reset_flags(self):
         self.flag_expression = False
@@ -98,23 +106,29 @@ if __name__ == "__main__":
 
     while True:
         start_off_value_input = input(
-            'Введи "Продолжить" чтобы продолжить, "Выйти" чтобы выйти, "Значение", '
+            'Введи "Начать" или "Продолжить" чтобы начать или продолжить, "Выйти" чтобы выйти, "Значение", '
             '"Удалить" чтобы удалить последнее значение: ').strip().upper()
 
-        if start_off_value_input == 'ПРОДОЛЖИТЬ':
-            calc.set_info()
-            result = calc.check_input()
+        if start_off_value_input in ('ПРОДОЛЖИТЬ', 'НАЧАТЬ'):
+            with ExecutionTimer():  # <--- Время только на основной блок
+                calc.set_info()
+                result = calc.check_input()
 
-            if result is not None:
-                calc.memo_plus(result)
-            else:
-                result = calc.calculate_result()
-                calc.memo_plus(result)
+                if result is not None:
+                    calc.memo_plus(result)
+                else:
+                    result = calc.calculate_result()
+                    calc.log_operation(calc.operation, (calc.num_1, calc.num_2), result)
+                    calc.memo_plus(result)
+
         elif start_off_value_input == 'УДАЛИТЬ':
             calc.memo_minus()
+
         elif start_off_value_input == 'ВЫЙТИ':
             break
+
         elif start_off_value_input == 'ЗНАЧЕНИЕ':
             print(calc.top_memory)
+
         else:
             print('Введите только "Продолжить", "Удалить", "Выйти" или "Значение"!')
