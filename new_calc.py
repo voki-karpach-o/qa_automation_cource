@@ -13,6 +13,34 @@ class ExecutionTimer:
         print(f" Время выполнения операции: {duration:.4f} секунд")
 
 
+def cache_result(func):
+    cache = {}
+
+    def wrapper(*args, **kwargs):
+        if (args, tuple(kwargs.items())) in cache:
+            print("Результат взят из кэша")  # Сообщение о кэшировании
+            return cache[(args, tuple(kwargs.items()))]
+        else:
+            calculated_result = func(*args, **kwargs)
+            cache[(args, tuple(kwargs.items()))] = calculated_result
+            return calculated_result
+
+    return wrapper
+
+
+@cache_result
+def factorial_recursive(n):
+    if n == 0 or n == 1:
+        return 1
+    return n * factorial_recursive(n - 1)
+
+
+def initialize_factorial_cache(cache, limit=100):
+    for i in range(limit + 1):
+        cache[(i,)] = factorial_recursive(i)
+        print(f"Факториал {i} инициализирован в кэш.")
+
+
 class NewCalc(BasicCalc):
     memory = []
 
@@ -104,13 +132,16 @@ class NewCalc(BasicCalc):
 if __name__ == "__main__":
     calc = NewCalc()
 
+    factorial_cache = {}
+    initialize_factorial_cache(factorial_cache)
+
     while True:
         start_off_value_input = input(
-            'Введи "Начать" или "Продолжить" чтобы начать или продолжить, "Выйти" чтобы выйти, "Значение", '
-            '"Удалить" чтобы удалить последнее значение: ').strip().upper()
+            'Введи "Начать" или "Продолжить" чтобы начать или продолжить, "Факториал" чтобы вычислить, '
+            '"Выйти" чтобы выйти, "Значение", "Удалить" чтобы удалить последнее значение: ').strip().upper()
 
         if start_off_value_input in ('ПРОДОЛЖИТЬ', 'НАЧАТЬ'):
-            with ExecutionTimer():  # <--- Время только на основной блок
+            with ExecutionTimer():
                 calc.set_info()
                 result = calc.check_input()
 
@@ -120,6 +151,15 @@ if __name__ == "__main__":
                     result = calc.calculate_result()
                     calc.log_operation(calc.operation, (calc.num_1, calc.num_2), result)
                     calc.memo_plus(result)
+
+        elif start_off_value_input == 'ФАКТОРИАЛ':
+            try:
+                num = int(input("Введите число для вычисления факториала: "))
+                with ExecutionTimer():
+                    result_fact = factorial_recursive(num)
+                print(f"Факториал {num} = {result_fact}")
+            except Exception as e:
+                print(f"Ошибка: {e}")
 
         elif start_off_value_input == 'УДАЛИТЬ':
             calc.memo_minus()
@@ -131,4 +171,4 @@ if __name__ == "__main__":
             print(calc.top_memory)
 
         else:
-            print('Введите только "Продолжить", "Удалить", "Выйти" или "Значение"!')
+            print('Введите только "Продолжить", "Удалить", "Факториал", "Выйти" или "Значение"!')
