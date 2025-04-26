@@ -1,5 +1,7 @@
 import re
 import time
+import math
+from datetime import datetime
 from basic_calc import BasicCalc
 
 
@@ -18,7 +20,7 @@ def cache_result(func):
 
     def wrapper(*args, **kwargs):
         if (args, tuple(kwargs.items())) in cache:
-            print("Результат взят из кэша")  # Сообщение о кэшировании
+            print("Результат взят из кэша")
             return cache[(args, tuple(kwargs.items()))]
         else:
             calculated_result = func(*args, **kwargs)
@@ -35,20 +37,35 @@ def factorial_recursive(n):
     return n * factorial_recursive(n - 1)
 
 
+@cache_result
+def factorial_regular(n):
+    if n == 0 or n == 1:
+        return 1
+    return math.factorial(n)
+
+
 def initialize_factorial_cache(cache, limit=100):
     for i in range(limit + 1):
         cache[(i,)] = factorial_recursive(i)
-        print(f"Факториал {i} инициализирован в кэш.")
+        print(f"Факториал рекурсивный {i} инициализирован в кэш.")
+    for i in range(limit + 1):
+        cache[(i,)] = factorial_regular(i)
+        print(f"Факториал обыкновенный {i} инициализирован в кэш.")
 
 
 class NewCalc(BasicCalc):
     memory = []
 
     def log_operation(self, operation_type, arguments, result_val):
+        date_logging = datetime.now().date().strftime("%Y.%m.%d")
+        time_logging = datetime.now().time().strftime("%H:%M:%S")
+
         log_entry = {
             "Операция": operation_type,
             "Аргументы": arguments,
-            "Результат": result_val
+            "Результат": result_val,
+            "Дата": date_logging,
+            "Время": time_logging
         }
         with open("calculator_log.txt", "a", encoding="utf-8") as log_file_op:
             log_file_op.write(str(log_entry) + "\n")
@@ -153,13 +170,23 @@ if __name__ == "__main__":
                     calc.memo_plus(result)
 
         elif start_off_value_input == 'ФАКТОРИАЛ':
-            try:
-                num = int(input("Введите число для вычисления факториала: "))
-                with ExecutionTimer():
-                    result_fact = factorial_recursive(num)
-                print(f"Факториал {num} = {result_fact}")
-            except Exception as e:
-                print(f"Ошибка: {e}")
+            value = input('Введи "Обычный", если нужен обычный факториал или "Рекурсивный", если нужен рекурсивный ').upper()
+            if value == 'РЕКУРСИВНЫЙ':
+                try:
+                    num = int(input("Введите число для вычисления факториала: "))
+                    with ExecutionTimer():
+                        result_fact = factorial_recursive(num)
+                    print(f"Факториал {num} = {result_fact}")
+                except Exception as e:
+                    print(f"Ошибка: {e}")
+            elif value == 'ОБЫЧНЫЙ':
+                try:
+                    num = int(input("Введите число для вычисления факториала: "))
+                    with ExecutionTimer():
+                        result_fact = factorial_regular(num)
+                    print(f"Факториал {num} = {result_fact}")
+                except Exception as e:
+                    print(f"Ошибка: {e}")
 
         elif start_off_value_input == 'УДАЛИТЬ':
             calc.memo_minus()
