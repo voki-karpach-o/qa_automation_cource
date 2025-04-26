@@ -1,6 +1,8 @@
 import re
 import time
 import math
+import collections
+import random
 from datetime import datetime
 from basic_calc import BasicCalc
 
@@ -55,6 +57,9 @@ def initialize_factorial_cache(cache, limit=100):
 
 class NewCalc(BasicCalc):
     memory = []
+
+    def generate_random_numbers(self):
+        pass
 
     def log_operation(self, operation_type, arguments, result_val):
         date_logging = datetime.now().date().strftime("%Y.%m.%d")
