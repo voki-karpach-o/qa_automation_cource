@@ -1,8 +1,8 @@
 import re
 import time
 import math
-import collections
 import random
+from collections import Counter
 from datetime import datetime
 from basic_calc import BasicCalc
 
@@ -58,10 +58,18 @@ def initialize_factorial_cache(cache, limit=100):
 class NewCalc(BasicCalc):
     memory = []
 
-    def generate_random_numbers(self):
-        pass
+    @staticmethod
+    def generate_random_numbers():
+        random_value = []
+        for n in range(100):
+            random_value.append(random.randint(0, 100))
+        count_value = Counter(random_value)
 
-    def log_operation(self, operation_type, arguments, result_val):
+        for key_value, count_value in count_value.items():
+            print(f"Число {key_value} встречается {count_value} раз")
+
+    @staticmethod
+    def log_operation(operation_type, arguments, result_val):
         date_logging = datetime.now().date().strftime("%Y.%m.%d")
         time_logging = datetime.now().time().strftime("%H:%M:%S")
 
@@ -159,8 +167,8 @@ if __name__ == "__main__":
 
     while True:
         start_off_value_input = input(
-            'Введи "Начать" или "Продолжить" чтобы начать или продолжить, "Факториал" чтобы вычислить, '
-            '"Выйти" чтобы выйти, "Значение", "Удалить" чтобы удалить последнее значение: ').strip().upper()
+            'Введи "Начать" или "Продолжить" чтобы начать или продолжить, "Факториал", "Выйти", "Значение", '
+            '"Удалить", "Распределение": ').strip().upper()
 
         if start_off_value_input in ('ПРОДОЛЖИТЬ', 'НАЧАТЬ'):
             with ExecutionTimer():
@@ -175,7 +183,7 @@ if __name__ == "__main__":
                     calc.memo_plus(result)
 
         elif start_off_value_input == 'ФАКТОРИАЛ':
-            value = input('Введи "Обычный", если нужен обычный факториал или "Рекурсивный", если нужен рекурсивный ').upper()
+            value = input('Введи "Обычный", если нужен обычный или "Рекурсивный", если нужен рекурсивный ').upper()
             if value == 'РЕКУРСИВНЫЙ':
                 try:
                     num = int(input("Введите число для вычисления факториала: "))
@@ -201,6 +209,9 @@ if __name__ == "__main__":
 
         elif start_off_value_input == 'ЗНАЧЕНИЕ':
             print(calc.top_memory)
+
+        elif start_off_value_input == "РАСПРЕДЕЛЕНИЕ":
+            calc.generate_random_numbers()
 
         else:
             print('Введите только "Продолжить", "Удалить", "Факториал", "Выйти" или "Значение"!')
