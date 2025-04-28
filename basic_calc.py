@@ -68,44 +68,39 @@ class BasicCalc:
             BasicCalc.last_result = result
             return result
 
-        while True:
+        try:
             for n in self.num_1:
                 n.replace('.', '', 1)
                 if n.isalpha() or n == '.':
-                    print(f'Некорректное значение "{self.num_1}"')
-                    self.num_1 = input('Повтори ввод первого числа: ')
                     self.num_1_invalid = True
-                    break
-            if self.num_1_invalid:
-                self.num_1_invalid = False
-                continue
+                    raise ValueError
 
-            if len(self.num_1) > 1 and ' ' in self.num_1:
-                self.num_1 = [int(n) for n in self.num_1.split()]
-                self.flag_sp = True
-                break
-            else:
-                self.num_1 = float(self.num_1)
-                break
+                if len(self.num_1) > 1 and ' ' in self.num_1:
+                    self.num_1 = [int(n) for n in self.num_1]
+                    self.flag_sp = True
 
-        while True:
+                else:
+                    self.num_1 = float(self.num_1)
+
+        except ValueError:
+            print(f'Некорректное значение "{self.num_1}"')
+
+        try:
             if self.flag_sp is False:
                 for n in self.num_2:
                     n.replace('.', '', 1)
                     if n.isalpha() or n == '.':
-                        print(f'Некорректное значение "{self.num_2}"')
-                        self.num_2 = input('Повтори ввод второго числа: ')
                         self.num_2_invalid = True
-                        break
-                if self.num_2_invalid:
-                    self.num_2_invalid = False
-                    continue
+                        raise ValueError
 
-                self.num_2 = float(self.num_2)
-                break
+                    else:
+                        self.num_2 = float(self.num_2)
+
+        except ValueError:
+            print(f'Некорректное значение "{self.num_2}"')
 
     def calculate_result(self):
-        if self.flag_expression is False:
+        if self.flag_expression is False and not self.num_1_invalid and not self.num_2_invalid:
             if self.flag_sp:
                 result = self.operations[self.operation](self.num_1)
             else:
