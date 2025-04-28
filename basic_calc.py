@@ -31,9 +31,9 @@ class BasicCalc:
     def calc_divide(first, second=None):
         try:
             if second == 0:
-                print("Деление на ноль!")
-                return 0  # Возвращаем 0 вместо None
-            return first / second
+                raise ZeroDivisionError
+            else:
+                return first / second
         except ZeroDivisionError:
             print("Ошибка деления на ноль!")
             return 0
