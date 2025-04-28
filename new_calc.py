@@ -30,7 +30,7 @@ class NewCalc(BasicCalc):
         if len(self.memory) > 0:
             return self.memory[-1]
         else:
-            return 'Список пуст!'
+            raise ValueError('Список пуст!')
 
 
 if __name__ == "__main__":
