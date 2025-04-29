@@ -35,26 +35,12 @@ class NewCalc(BasicCalc):
 
 if __name__ == "__main__":
     calc = NewCalc()
+    calc.set_info()
+    result = calc.check_input()
 
-    while True:
-        start_off_value_input = input(
-            'Введи "Начать" или "Продолжить", "Выйти" , "Значение", '
-            '"Удалить" чтобы удалить последнее значение: ').strip().upper()
+    if result is not None:
+        calc.memo_plus(result)
 
-        if start_off_value_input == 'ПРОДОЛЖИТЬ' or start_off_value_input == 'НАЧАТЬ':
-            calc.set_info()
-            result = calc.check_input()
-
-            if result is not None:
-                calc.memo_plus(result)
-            else:
-                result = calc.calculate_result()
-                calc.memo_plus(result)
-        elif start_off_value_input == 'УДАЛИТЬ':
-            calc.memo_minus()
-        elif start_off_value_input == 'ВЫЙТИ':
-            break
-        elif start_off_value_input == 'ЗНАЧЕНИЕ':
-            print(calc.top_memory)
-        else:
-            print('Введите только "Продолжить", "Удалить", "Выйти" или "Значение"!')
+    else:
+        result = calc.calculate_result()
+        calc.memo_plus(result)
