@@ -2,37 +2,29 @@ from basic_calc import BasicCalc
 
 
 class NewCalc(BasicCalc):
-    memory = []
 
-    @staticmethod
-    def memo_plus(number=None):
-        try:
-            if len(NewCalc.memory) < 3:
-                return NewCalc.memory.append(number)
-            else:
-                raise MemoryError
-        except MemoryError:
+    def __init__(self):
+        super().__init__()
+        self.memory = []
+
+    def memo_plus(self, number=None):
+        if len(self.memory) < 3:
+            return self.memory.append(number)
+        else:
             print('Все ячейки памяти заполнены, новые значения не будут сохраняться!')
 
-    @staticmethod
-    def memo_minus():
-        try:
-            if NewCalc.memory:
-                removed = NewCalc.memory.pop()
-                print(f'Удалено значение: {removed}')
-            else:
-                raise IndexError
-        except IndexError:
+    def memo_minus(self):
+        if self.memory:
+            removed = self.memory.pop()
+            print(f'Удалено значение: {removed}')
+        else:
             print('Значений в памяти нет!')
 
     @property
     def top_memory(self):
-        try:
-            if len(self.memory) > 0:
-                return self.memory[-1]
-            else:
-                raise IndexError
-        except IndexError:
+        if len(self.memory) > 0:
+            return self.memory[-1]
+        else:
             print('Список пуст!')
 
 
