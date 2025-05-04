@@ -10,8 +10,8 @@ class NewCalc(BasicCalc):
             if len(NewCalc.memory) < 3:
                 return NewCalc.memory.append(number)
             else:
-                raise ValueError
-        except ValueError:
+                raise MemoryError
+        except MemoryError:
             print('Все ячейки памяти заполнены, новые значения не будут сохраняться!')
 
     @staticmethod
