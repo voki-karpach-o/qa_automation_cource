@@ -21,16 +21,19 @@ class NewCalc(BasicCalc):
                 removed = NewCalc.memory.pop()
                 print(f'Удалено значение: {removed}')
             else:
-                raise ValueError
-        except ValueError:
+                raise IndexError
+        except IndexError:
             print('Значений в памяти нет!')
 
     @property
     def top_memory(self):
-        if len(self.memory) > 0:
-            return self.memory[-1]
-        else:
-            raise ValueError('Список пуст!')
+        try:
+            if len(self.memory) > 0:
+                return self.memory[-1]
+            else:
+                raise IndexError
+        except IndexError:
+            print('Список пуст!')
 
 
 if __name__ == "__main__":
