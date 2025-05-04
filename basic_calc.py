@@ -3,7 +3,6 @@ import re
 
 class BasicCalc:
     pattern = r'^(\d+(\.\d+)?)([+\-*/])(\d+(\.\d+)?)$'
-    last_result = None
 
     def __init__(self):
         self.flag_expression = False
@@ -14,6 +13,7 @@ class BasicCalc:
         self.num_1 = None
         self.num_2 = None
         self.pattern = BasicCalc.pattern
+        self.last_result = None
 
         self.operations = {
             '+': self.calc_add,
@@ -61,7 +61,6 @@ class BasicCalc:
             print(result)
             self.flag_expression = True
             self.last_result = result
-            BasicCalc.last_result = result
             return result
 
         try:
@@ -103,7 +102,7 @@ class BasicCalc:
                 result = self.operations[self.operation](self.num_1, self.num_2)
 
             print(result)
-            BasicCalc.last_result = result
+            self.last_result = result
             return result
 
 
