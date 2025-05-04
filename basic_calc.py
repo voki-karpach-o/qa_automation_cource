@@ -29,14 +29,10 @@ class BasicCalc:
 
     @staticmethod
     def calc_divide(first, second=None):
-        try:
-            if second == 0:
-                raise ZeroDivisionError
-            else:
-                return first / second
-        except ZeroDivisionError:
+        if second == 0:
             print("Ошибка деления на ноль!")
             return 0
+        return first / second
 
     @staticmethod
     def calc_subtract(first, second=None):
