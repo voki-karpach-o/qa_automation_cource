@@ -56,7 +56,9 @@ def initialize_factorial_cache(cache, limit=100):
 
 
 class NewCalc(BasicCalc):
-    memory = []
+    def __init__(self):
+        super().__init__()
+        self.memory = []
 
     @staticmethod
     def generate_random_numbers():
@@ -83,31 +85,18 @@ class NewCalc(BasicCalc):
         with open("calculator_log.txt", "a", encoding="utf-8") as log_file_op:
             log_file_op.write(str(log_entry) + "\n")
 
-    @staticmethod
-    def memo_plus(number=None):
-        try:
-            if len(NewCalc.memory) < 3:
-                NewCalc.memory.append(number)
-                print(f'Добавлено значение: {number}')
-            else:
-                raise ValueError
-        except ValueError:
+    def memo_plus(self, number=None):
+        if len(self.memory) < 3:
+            return self.memory.append(number)
+        else:
             print('Все ячейки памяти заполнены, новые значения не будут сохраняться!')
 
-    @staticmethod
-    def memo_minus():
-        try:
-            if NewCalc.memory:
-                removed = NewCalc.memory.pop()
-                print(f'Удалено значение: {removed}')
-            else:
-                raise ValueError
-        except ValueError:
+    def memo_minus(self):
+        if self.memory:
+            removed = self.memory.pop()
+            print(f'Удалено значение: {removed}')
+        else:
             print('Значений в памяти нет!')
-
-    def reset_flags(self):
-        self.flag_expression = False
-        self.flag_sp = False
 
     @property
     def top_memory(self):
@@ -116,7 +105,7 @@ class NewCalc(BasicCalc):
         else:
             return 'Список пуст!'
 
-    def check_input(self):
+    def calculate_result(self):
         match = re.fullmatch(self.pattern, self.num_1)
         if match:
             first_num, _, op, second_num, _ = match.groups()
@@ -130,33 +119,36 @@ class NewCalc(BasicCalc):
             self.log_operation("выражение", (first_num, second_num), result_expr)
             return result_expr
 
-        while True:
-            for ch in self.num_1:
-                ch.replace('.', '', 1)
-                if ch.isalpha() or ch == '.':
-                    print(f'Некорректное значение "{self.num_1}", заменено на 0')
-                    self.num_1 = '0'
-                    break
+        try:
+            for n in self.num_1:
+                n.replace('.', '', 1)
+                if n.isalpha() or n == '.':
+                    self.num_1_invalid = True
+                    raise ValueError
 
-            if len(self.num_1) > 1 and ' ' in self.num_1:
-                self.num_1 = [int(n) for n in self.num_1.split()]
-                self.flag_sp = True
-                break
-            else:
-                self.num_1 = float(self.num_1)
-                break
+                if len(self.num_1) > 1 and ' ' in self.num_1:
+                    self.num_1 = [int(n) for n in self.num_1]
+                    self.flag_sp = True
 
-        while True:
+                else:
+                    self.num_1 = float(self.num_1)
+
+        except ValueError:
+            print(f'Некорректное значение "{self.num_1}"')
+
+        try:
             if self.flag_sp is False:
-                for ch in self.num_2:
-                    ch.replace('.', '', 1)
-                    if ch.isalpha() or ch == '.':
-                        print(f'Некорректное значение "{self.num_2}", заменено на 0')
-                        self.num_2 = '0'
-                        break
+                for n in self.num_2:
+                    n.replace('.', '', 1)
+                    if n.isalpha() or n == '.':
+                        self.num_2_invalid = True
+                        raise ValueError
 
-                self.num_2 = float(self.num_2)
-                break
+                    else:
+                        self.num_2 = float(self.num_2)
+
+        except ValueError:
+            print(f'Некорректное значение "{self.num_2}"')
 
 
 if __name__ == "__main__":
@@ -165,53 +157,5 @@ if __name__ == "__main__":
     factorial_cache = {}
     initialize_factorial_cache(factorial_cache)
 
-    while True:
-        start_off_value_input = input(
-            'Введи "Начать" или "Продолжить" чтобы начать или продолжить, "Факториал", "Выйти", "Значение", '
-            '"Удалить", "Распределение": ').strip().upper()
-
-        if start_off_value_input in ('ПРОДОЛЖИТЬ', 'НАЧАТЬ'):
-            with ExecutionTimer():
-                calc.set_info()
-                result = calc.check_input()
-
-                if result is not None:
-                    calc.memo_plus(result)
-                else:
-                    result = calc.calculate_result()
-                    calc.log_operation(calc.operation, (calc.num_1, calc.num_2), result)
-                    calc.memo_plus(result)
-
-        elif start_off_value_input == 'ФАКТОРИАЛ':
-            value = input('Введи "Обычный", если нужен обычный или "Рекурсивный", если нужен рекурсивный ').upper()
-            if value == 'РЕКУРСИВНЫЙ':
-                try:
-                    num = int(input("Введите число для вычисления факториала: "))
-                    with ExecutionTimer():
-                        result_fact = factorial_recursive(num)
-                    print(f"Факториал {num} = {result_fact}")
-                except Exception as e:
-                    print(f"Ошибка: {e}")
-            elif value == 'ОБЫЧНЫЙ':
-                try:
-                    num = int(input("Введите число для вычисления факториала: "))
-                    with ExecutionTimer():
-                        result_fact = factorial_regular(num)
-                    print(f"Факториал {num} = {result_fact}")
-                except Exception as e:
-                    print(f"Ошибка: {e}")
-
-        elif start_off_value_input == 'УДАЛИТЬ':
-            calc.memo_minus()
-
-        elif start_off_value_input == 'ВЫЙТИ':
-            break
-
-        elif start_off_value_input == 'ЗНАЧЕНИЕ':
-            print(calc.top_memory)
-
-        elif start_off_value_input == "РАСПРЕДЕЛЕНИЕ":
-            calc.generate_random_numbers()
-
-        else:
-            print('Введите только "Продолжить", "Удалить", "Факториал", "Выйти" или "Значение"!')
+    calc.input_info()
+    calc.memo_plus(calc.calculate_result())
