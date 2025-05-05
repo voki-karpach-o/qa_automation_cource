@@ -30,7 +30,7 @@ class NewCalc(BasicCalc):
 
 if __name__ == "__main__":
     calc = NewCalc()
-    calc.set_info()
+    calc.input_info()
     result = calc.check_input()
 
     if result is not None:
