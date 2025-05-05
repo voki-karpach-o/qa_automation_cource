@@ -51,7 +51,7 @@ class BasicCalc:
         self.operation = input('Выберите знак математической операции: +, -, *, /  ')
         self.num_2 = input('Введи цифру: ')
 
-    def check_input(self):
+    def check_and_calculate_result(self):
         match = re.fullmatch(self.pattern, self.num_1)
         if match:
             first_num, _, operation, second_num, _ = match.groups()
@@ -94,7 +94,6 @@ class BasicCalc:
         except ValueError:
             print(f'Некорректное значение "{self.num_2}"')
 
-    def calculate_result(self):
         if self.flag_expression is False and not self.num_1_invalid and not self.num_2_invalid:
             if self.flag_sp:
                 result = self.operations[self.operation](self.num_1)
@@ -109,5 +108,4 @@ class BasicCalc:
 if __name__ == '__main__':
     calc = BasicCalc()
     calc.input_info()
-    calc.check_input()
-    calc.calculate_result()
+    calc.check_and_calculate_result()

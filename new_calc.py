@@ -31,11 +31,4 @@ class NewCalc(BasicCalc):
 if __name__ == "__main__":
     calc = NewCalc()
     calc.input_info()
-    result = calc.check_input()
-
-    if result is not None:
-        calc.memo_plus(result)
-
-    else:
-        result = calc.calculate_result()
-        calc.memo_plus(result)
+    calc.memo_plus(calc.check_and_calculate_result())
