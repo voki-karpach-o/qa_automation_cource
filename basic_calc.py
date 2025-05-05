@@ -46,7 +46,7 @@ class BasicCalc:
         else:
             return first + second
 
-    def set_info(self):
+    def input_info(self):
         self.num_1 = input('Введи цифру или математическое выражение без пробелов: ')
         self.operation = input('Выберите знак математической операции: +, -, *, /  ')
         self.num_2 = input('Введи цифру: ')
@@ -108,6 +108,6 @@ class BasicCalc:
 
 if __name__ == '__main__':
     calc = BasicCalc()
-    calc.set_info()
+    calc.input_info()
     calc.check_input()
     calc.calculate_result()
