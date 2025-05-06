@@ -2,25 +2,34 @@ import re
 
 
 class BasicCalc:
+    _instance = None
     pattern = r'^(\d+(\.\d+)?)([+\-*/])(\d+(\.\d+)?)$'
 
-    def __init__(self):
-        self.flag_expression = False
-        self.flag_sp = False
-        self.num_1_invalid = False
-        self.num_2_invalid = False
-        self.operation = None
-        self.num_1 = None
-        self.num_2 = None
-        self.pattern = BasicCalc.pattern
-        self.last_result = None
+    def __new__(cls, *args, **kwargs):
+        # Если экземпляр уже существует, просто возвращаем его
+        if not cls._instance:
+            cls._instance = super().__new__(cls, *args, **kwargs)
+        return cls._instance
 
-        self.operations = {
-            '+': self.calc_add,
-            '-': self.calc_subtract,
-            '*': self.calc_multiply,
-            '/': self.calc_divide
-        }
+    def __init__(self):
+        if not hasattr(self, 'initialized'):
+            self.initialized = True
+            self.flag_expression = False
+            self.flag_sp = False
+            self.num_1_invalid = False
+            self.num_2_invalid = False
+            self.operation = None
+            self.num_1 = None
+            self.num_2 = None
+            self.pattern = BasicCalc.pattern
+            self.last_result = None
+
+            self.operations = {
+                '+': self.calc_add,
+                '-': self.calc_subtract,
+                '*': self.calc_multiply,
+                '/': self.calc_divide
+            }
 
     @staticmethod
     def calc_multiply(first, second=None):
