@@ -71,7 +71,7 @@ class NewCalc(BasicCalc):
             print(f"Число {key_value} встречается {count_value} раз")
 
     @staticmethod
-    def log_operation(operation_type, arguments, result_val):
+    def log_operation(operation_type, arguments, result_val, log_file_path):
         date_logging = datetime.now().date().strftime("%Y.%m.%d")
         time_logging = datetime.now().time().strftime("%H:%M:%S")
 
@@ -82,7 +82,8 @@ class NewCalc(BasicCalc):
             "Дата": date_logging,
             "Время": time_logging
         }
-        with open("calculator_log.txt", "a", encoding="utf-8") as log_file_op:
+
+        with open(log_file_path, "a", encoding="utf-8") as log_file_op:
             log_file_op.write(str(log_entry) + "\n")
 
     def memo_plus(self, number=None):
