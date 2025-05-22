@@ -4,7 +4,7 @@ import math
 import random
 from collections import Counter
 from datetime import datetime
-from basic_calc import BasicCalc
+from .basic_calc import BasicCalc
 
 
 class ExecutionTimer:
