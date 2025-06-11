@@ -29,7 +29,7 @@ class NewCalc(BasicCalc):
 
 
 if __name__ == '__main__':
-    calc = BasicCalc()
+    calc = NewCalc()
     calc.input_info()
 
     try:
