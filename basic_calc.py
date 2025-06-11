@@ -79,7 +79,6 @@ class BasicCalc:
             for n in self.num_2:
                 n.replace('.', '', 1)
                 if n.isalpha() or n == '.':
-                    self.num_2_invalid = True
                     raise ValueError("Введено неправильное значения для первого числа!")
 
                 else:
@@ -106,5 +105,3 @@ if __name__ == '__main__':
             print(f"Итоговый результат: {result}")
     except ValueError as v:
         print(f"Произошла ошибка ввода: {v}")
-    except Exception as e:
-        print(f"Произошла непредвиденная ошибка: {e}")

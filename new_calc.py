@@ -11,24 +11,34 @@ class NewCalc(BasicCalc):
         if len(self.memory) < 3:
             return self.memory.append(number)
         else:
-            print('Все ячейки памяти заполнены, новые значения не будут сохраняться!')
+            raise MemoryError("Все ячейки памяти заполнены!")
 
     def memo_minus(self):
         if self.memory:
             removed = self.memory.pop()
             print(f'Удалено значение: {removed}')
         else:
-            print('Значений в памяти нет!')
+            raise ValueError("Значений в памяти нет!")
 
     @property
     def top_memory(self):
         if len(self.memory) > 0:
             return self.memory[-1]
         else:
-            print('Список пуст!')
+            raise IndexError("Список пуст!")
 
 
-if __name__ == "__main__":
-    calc = NewCalc()
+if __name__ == '__main__':
+    calc = BasicCalc()
     calc.input_info()
-    calc.memo_plus(calc.check_and_calculate_result())
+
+    try:
+        result = calc.check_and_calculate_result()
+        if result is not None:
+            print(f"Итоговый результат: {result}")
+    except MemoryError as m:
+        print(f"Произошла непредвиденная ошибка: {m}")
+    except ValueError as v:
+        print(f"Произошла непредвиденная ошибка: {v}")
+    except IndexError as i:
+        print(f"Произошла непредвиденная ошибка: {i}")
