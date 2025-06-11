@@ -5,7 +5,8 @@ import re
 class NewCalc(BasicCalc):
     memory = []
 
-    def log_operation(self, operation_type, arguments, result_val):
+    @staticmethod
+    def log_operation(operation_type, arguments, result_val):
         log_entry = {
             "Операция": operation_type,
             "Аргументы": arguments,
@@ -14,30 +15,18 @@ class NewCalc(BasicCalc):
         with open("calculator_log.txt", "a", encoding="utf-8") as log_file_op:
             log_file_op.write(str(log_entry) + "\n")
 
-    @staticmethod
-    def memo_plus(number=None):
-        while True:
-            try:
-                if len(NewCalc.memory) < 3:
-                    return NewCalc.memory.append(number)
-                else:
-                    raise ValueError
-            except ValueError:
-                print('Все ячейки памяти заполнены, новые значения не будут сохраняться!')
-                break
+    def memo_plus(self, number=None):
+        if len(self.memory) < 3:
+            return self.memory.append(number)
+        else:
+            print('Все ячейки памяти заполнены, новые значения не будут сохраняться!')
 
-    @staticmethod
-    def memo_minus():
-        while True:
-            try:
-                if NewCalc.memory:
-                    removed = NewCalc.memory.pop()
-                    print(f'Удалено значение: {removed}')
-                else:
-                    raise ValueError
-            except ValueError:
-                print('Значений в памяти нет!')
-                break
+    def memo_minus(self):
+        if self.memory:
+            removed = self.memory.pop()
+            print(f'Удалено значение: {removed}')
+        else:
+            print('Значений в памяти нет!')
 
     def reset_flags(self):
         self.flag_expression = False
