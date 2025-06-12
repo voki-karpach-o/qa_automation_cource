@@ -63,27 +63,15 @@ class BasicCalc:
             self.last_result = calculated_result
             return calculated_result
 
-        for n in self.num_1:
-            n.replace('.', '', 1)
-            if n.isalpha() or n == '.':
-                raise ValueError("Введено неправильное значения для первого числа!")
-
-            if len(self.num_1) > 1 and ' ' in self.num_1:
-                self.num_1 = [int(n) for n in self.num_1]
-                self.flag_sp = True
-
-            else:
+        else:
+            try:
                 self.num_1 = float(self.num_1)
-
-        if self.flag_sp is False:
-            for n in self.num_2:
-                n.replace('.', '', 1)
-                if n.isalpha() or n == '.':
-                    self.num_2_invalid = True
-                    raise ValueError("Введено неправильное значения для первого числа!")
-
-                else:
-                    self.num_2 = float(self.num_2)
+            except ValueError:
+                raise ValueError(f"Невалидное значение для первого числа: '{self.num_1}'")
+            try:
+                self.num_2 = float(self.num_2)
+            except ValueError:
+                raise ValueError(f"Невалидное значение для первого числа: '{self.num_2}'")
 
         if self.flag_expression is False:
             if self.flag_sp:
@@ -102,9 +90,5 @@ if __name__ == '__main__':
 
     try:
         result = calc.check_and_calculate_result()
-        if result is not None:
-            print(f"Итоговый результат: {result}")
     except ValueError as v:
         print(f"Произошла ошибка ввода: {v}")
-    except Exception as e:
-        print(f"Произошла непредвиденная ошибка: {e}")

@@ -53,57 +53,39 @@ class NewCalc(BasicCalc):
             self.log_operation("выражение", (first_num, second_num), result_expr)
             return result_expr
 
-        while True:
-            for ch in self.num_1:
-                ch.replace('.', '', 1)
-                if ch.isalpha() or ch == '.':
-                    print(f'Некорректное значение "{self.num_1}", заменено на 0')
-                    self.num_1 = '0'
-                    break
-
-            if len(self.num_1) > 1 and ' ' in self.num_1:
-                self.num_1 = [int(n) for n in self.num_1.split()]
-                self.flag_sp = True
-                break
-            else:
+        else:
+            try:
                 self.num_1 = float(self.num_1)
-                break
+            except ValueError:
+                print(f"Невалидное значение для первого числа ('{self.num_1}')! Заменено на 0.")
+                self.num_1 = 0
 
-        while True:
-            if self.flag_sp is False:
-                for ch in self.num_2:
-                    ch.replace('.', '', 1)
-                    if ch.isalpha() or ch == '.':
-                        print(f'Некорректное значение "{self.num_2}", заменено на 0')
-                        self.num_2 = '0'
-                        break
-
+            try:
                 self.num_2 = float(self.num_2)
-                break
+            except ValueError:
+                print(f"Невалидное значение для второго числа ('{self.num_2}')! Заменено на 0.")
+                self.num_2 = 0
+
+        if self.flag_expression is False:
+            if self.flag_sp:
+                calculated_result = self.operations[self.operation](self.num_1)
+            else:
+                calculated_result = self.operations[self.operation](self.num_1, self.num_2)
+
+            print(calculated_result)
+            self.last_result = calculated_result
+            return calculated_result
 
 
 if __name__ == "__main__":
     calc = NewCalc()
+    calc.input_info()
 
-    while True:
-        start_off_value_input = input(
-            'Введи "Продолжить" чтобы продолжить, "Выйти" чтобы выйти, "Значение", '
-            '"Удалить" чтобы удалить последнее значение: ').strip().upper()
-
-        if start_off_value_input == 'ПРОДОЛЖИТЬ':
-            calc.set_info()
-            result = calc.check_input()
-
-            if result is not None:
-                calc.memo_plus(result)
-            else:
-                result = calc.calculate_result()
-                calc.memo_plus(result)
-        elif start_off_value_input == 'УДАЛИТЬ':
-            calc.memo_minus()
-        elif start_off_value_input == 'ВЫЙТИ':
-            break
-        elif start_off_value_input == 'ЗНАЧЕНИЕ':
-            print(calc.top_memory)
-        else:
-            print('Введите только "Продолжить", "Удалить", "Выйти" или "Значение"!')
+    try:
+        result = calc.check_and_calculate_result()
+    except MemoryError as m:
+        print(f"Произошла непредвиденная ошибка: {m}")
+    except ValueError as v:
+        print(f"Произошла непредвиденная ошибка: {v}")
+    except IndexError as i:
+        print(f"Произошла непредвиденная ошибка: {i}")
