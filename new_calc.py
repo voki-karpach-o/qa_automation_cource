@@ -19,25 +19,25 @@ class NewCalc(BasicCalc):
         if len(self.memory) < 3:
             return self.memory.append(number)
         else:
-            print('Все ячейки памяти заполнены, новые значения не будут сохраняться!')
+            raise MemoryError("Все ячейки памяти заполнены!")
 
     def memo_minus(self):
         if self.memory:
             removed = self.memory.pop()
             print(f'Удалено значение: {removed}')
         else:
-            print('Значений в памяти нет!')
-
-    def reset_flags(self):
-        self.flag_expression = False
-        self.flag_sp = False
+            raise ValueError("Значений в памяти нет!")
 
     @property
     def top_memory(self):
         if len(self.memory) > 0:
             return self.memory[-1]
         else:
-            return 'Список пуст!'
+            raise IndexError("Список пуст!")
+
+    def reset_flags(self):
+        self.flag_expression = False
+        self.flag_sp = False
 
     def check_input(self):
         match = re.fullmatch(self.pattern, self.num_1)
