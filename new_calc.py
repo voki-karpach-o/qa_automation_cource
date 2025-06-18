@@ -70,9 +70,5 @@ if __name__ == '__main__':
 
     try:
         result = calc.check_and_calculate_result()
-    except MemoryError as m:
-        print(f"Произошла непредвиденная ошибка: {m}")
-    except ValueError as v:
-        print(f"Произошла непредвиденная ошибка: {v}")
-    except IndexError as i:
-        print(f"Произошла непредвиденная ошибка: {i}")
+    except (MemoryError, ValueError, IndexError) as e:
+        print(f"Произошла ошибка: {e}")
