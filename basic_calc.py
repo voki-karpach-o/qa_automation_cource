@@ -67,11 +67,14 @@ class BasicCalc:
             try:
                 self.num_1 = float(self.num_1)
             except ValueError:
-                raise ValueError(f"Невалидное значение для первого числа: '{self.num_1}'")
+                print(f"Невалидное значение для первого числа ('{self.num_1}')! Заменено на 0.")
+                self.num_1 = 0
+
             try:
                 self.num_2 = float(self.num_2)
             except ValueError:
-                raise ValueError(f"Невалидное значение для первого числа: '{self.num_2}'")
+                print(f"Невалидное значение для второго числа ('{self.num_2}')! Заменено на 0.")
+                self.num_2 = 0
 
         if self.flag_expression is False:
             if self.flag_sp:
@@ -90,5 +93,5 @@ if __name__ == '__main__':
 
     try:
         result = calc.check_and_calculate_result()
-    except ValueError as v:
-        print(f"Произошла ошибка ввода: {v}")
+    except (MemoryError, ValueError, IndexError) as e:
+        print(f"Произошла ошибка: {e}")
