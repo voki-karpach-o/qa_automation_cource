@@ -44,7 +44,6 @@ class NewCalc(BasicCalc):
         calculated_result = super().check_and_calculate_result()
         if calculated_result is not None:
             self.log_operation("выражение", (self.num_1, self.num_2), calculated_result)
-
         return calculated_result
 
 

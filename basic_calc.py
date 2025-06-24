@@ -41,10 +41,7 @@ class BasicCalc:
 
     @staticmethod
     def calc_add(first, second=None):
-        if second is None:
-            return sum(first)
-        else:
-            return first + second
+        return first + second
 
     def input_info(self):
         self.num_1 = input('Введи цифру или математическое выражение без пробелов: ')
@@ -77,11 +74,7 @@ class BasicCalc:
                 self.num_2 = 0
 
         if self.flag_expression is False:
-            if self.flag_sp:
-                calculated_result = self.operations[self.operation](self.num_1)
-            else:
-                calculated_result = self.operations[self.operation](self.num_1, self.num_2)
-
+            calculated_result = self.operations[self.operation](self.num_1, self.num_2)
             print(calculated_result)
             self.last_result = calculated_result
             return calculated_result
