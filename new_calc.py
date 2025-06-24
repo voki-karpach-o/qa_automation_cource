@@ -31,14 +31,7 @@ class NewCalc(BasicCalc):
     def check_and_calculate_result(self):
         match = re.fullmatch(self.pattern, self.num_1)
         if match:
-            first_num, _, operation, second_num, _ = match.groups()
-            first_num = float(first_num)
-            second_num = float(second_num)
-            calculated_result = self.operations[operation](first_num, second_num)
-            print(calculated_result)
-            self.flag_expression = True
-            self.last_result = calculated_result
-            return calculated_result
+            super().check_and_calculate_result()
 
         else:
             try:
@@ -53,12 +46,7 @@ class NewCalc(BasicCalc):
                 print(f"Невалидное значение для второго числа ('{self.num_2}')! Заменено на 0.")
                 self.num_2 = 0
 
-        if self.flag_expression is False:
-            if self.flag_sp:
-                calculated_result = self.operations[self.operation](self.num_1)
-            else:
-                calculated_result = self.operations[self.operation](self.num_1, self.num_2)
-
+            calculated_result = self.operations[self.operation](self.num_1, self.num_2)
             print(calculated_result)
             self.last_result = calculated_result
             return calculated_result
