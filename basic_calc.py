@@ -64,14 +64,8 @@ class BasicCalc:
             return calculated_result
 
         else:
-            try:
-                self.num_1 = float(self.num_1)
-            except ValueError:
-                raise ValueError(f"Невалидное значение для первого числа: '{self.num_1}'")
-            try:
-                self.num_2 = float(self.num_2)
-            except ValueError:
-                raise ValueError(f"Невалидное значение для первого числа: '{self.num_2}'")
+            self.num_1 = float(self.num_1)
+            self.num_2 = float(self.num_2)
 
         if self.flag_expression is False:
             if self.flag_sp:
