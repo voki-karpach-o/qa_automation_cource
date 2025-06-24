@@ -6,9 +6,6 @@ class BasicCalc:
 
     def __init__(self):
         self.flag_expression = False
-        self.flag_sp = False
-        self.num_1_invalid = False
-        self.num_2_invalid = False
         self.operation = None
         self.num_1 = None
         self.num_2 = None
