@@ -1,59 +1,63 @@
 from basic_calc import BasicCalc
+import re
 
 
 class NewCalc(BasicCalc):
-    memory = []
 
-    @staticmethod
-    def memo_plus(number=None):
-        if len(NewCalc.memory) < 3:
-            return NewCalc.memory.append(number)
+    def __init__(self):
+        super().__init__()
+        self.memory = []
+        self.last_result = None
+
+    def memo_plus(self, number=None):
+        if len(self.memory) < 3:
+            return self.memory.append(number)
         else:
-            print('Все ячейки памяти заполнены, новые значения не будут сохраняться!')
+            raise MemoryError("Все ячейки памяти заполнены!")
 
-    @staticmethod
-    def memo_minus():
-        if NewCalc.memory:
-            removed = NewCalc.memory.pop()
+    def memo_minus(self):
+        if self.memory:
+            removed = self.memory.pop()
             print(f'Удалено значение: {removed}')
         else:
-            return 'Значений в памяти нет!'
-
-    def reset_flags(self):
-        self.flag_expression = False
-        self.flag_sp = False
+            raise ValueError("Значений в памяти нет!")
 
     @property
     def top_memory(self):
         if len(self.memory) > 0:
             return self.memory[-1]
         else:
-            return 'Список пуст!'
+            raise IndexError("Список пуст!")
 
+    def check_and_calculate_result(self):
+        match = re.fullmatch(self.pattern, self.num_1)
+        if match:
+            super().check_and_calculate_result()
 
-if __name__ == "__main__":
-    calc = NewCalc()
-    calc.memo_plus(BasicCalc.last_result)
-
-    while True:
-        start_off_value_input = input(
-            'Введи "Продолжить" чтобы продолжить, "Выйти" чтобы выйти, "Значение", '
-            '"Удалить" чтобы удалить последнее значение: ').strip().upper()
-
-        if start_off_value_input == 'ПРОДОЛЖИТЬ':
-            calc.set_info()
-            result = calc.check_input()
-
-            if result is not None:
-                calc.memo_plus(result)
-            else:
-                result = calc.calculate_result()
-                calc.memo_plus(result)
-        elif start_off_value_input == 'УДАЛИТЬ':
-            calc.memo_minus()
-        elif start_off_value_input == 'ВЫЙТИ':
-            break
-        elif start_off_value_input == 'ЗНАЧЕНИЕ':
-            print(calc.top_memory)
         else:
-            print('Введите только "Продолжить", "Удалить", "Выйти" или "Значение"!')
+            try:
+                self.num_1 = float(self.num_1)
+            except ValueError:
+                print(f"Невалидное значение для первого числа ('{self.num_1}')! Заменено на 0.")
+                self.num_1 = 0
+
+            try:
+                self.num_2 = float(self.num_2)
+            except ValueError:
+                print(f"Невалидное значение для второго числа ('{self.num_2}')! Заменено на 0.")
+                self.num_2 = 0
+
+            calculated_result = self.operations[self.operation](self.num_1, self.num_2)
+            print(calculated_result)
+            self.last_result = calculated_result
+            return calculated_result
+
+
+if __name__ == '__main__':
+    calc = NewCalc()
+    calc.input_info()
+
+    try:
+        result = calc.check_and_calculate_result()
+    except (MemoryError, ValueError, IndexError) as e:
+        print(f"Произошла ошибка: {e}")
