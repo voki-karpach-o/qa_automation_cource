@@ -54,5 +54,7 @@ if __name__ == "__main__":
 
     try:
         result = calc.check_and_calculate_result()
-    except (MemoryError, ValueError, IndexError) as e:
-        print(f"Произошла ошибка: {e}")
+    except MemoryError as e:
+        print(f"Ошибка при работе с памятью: {e}")
+    except ValueError as e:
+        print(f"Ошибка ввода или вычисления: {e}")
