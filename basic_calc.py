@@ -2,7 +2,7 @@ import re
 
 
 class BasicCalc:
-    pattern = r'^(\d+(\.\d+)?)([+\-*/])(\d+(\.\d+)?)$'
+    pattern = r'^(\d+(?:\.\d+)?)\s*([+\-*/])\s*(\d+(?:\.\d+)?)$'
 
     def __init__(self):
         self.flag_expression = False
@@ -54,7 +54,7 @@ class BasicCalc:
     def check_and_calculate_result(self):
         match = re.fullmatch(self.pattern, self.num_1)
         if match:
-            first_num, _, operation, second_num, _ = match.groups()
+            first_num, operation, second_num = match.groups()
             first_num = float(first_num)
             second_num = float(second_num)
             calculated_result = self.operations[operation](first_num, second_num)
