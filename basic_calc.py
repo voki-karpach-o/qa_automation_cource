@@ -6,14 +6,10 @@ class BasicCalc:
 
     def __init__(self):
         self.flag_expression = False
-        self.flag_sp = False
-        self.num_1_invalid = False
-        self.num_2_invalid = False
         self.operation = None
         self.num_1 = None
         self.num_2 = None
         self.pattern = BasicCalc.pattern
-        self.last_result = None
 
         self.operations = {
             '+': self.calc_add,
@@ -60,7 +56,6 @@ class BasicCalc:
             calculated_result = self.operations[operation](first_num, second_num)
             print(calculated_result)
             self.flag_expression = True
-            self.last_result = calculated_result
             return calculated_result
 
         else:
@@ -68,13 +63,8 @@ class BasicCalc:
             self.num_2 = float(self.num_2)
 
         if self.flag_expression is False:
-            if self.flag_sp:
-                calculated_result = self.operations[self.operation](self.num_1)
-            else:
-                calculated_result = self.operations[self.operation](self.num_1, self.num_2)
-
+            calculated_result = self.operations[self.operation](self.num_1, self.num_2)
             print(calculated_result)
-            self.last_result = calculated_result
             return calculated_result
 
 

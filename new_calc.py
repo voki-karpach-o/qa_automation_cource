@@ -7,6 +7,7 @@ class NewCalc(BasicCalc):
     def __init__(self):
         super().__init__()
         self.memory = []
+        self.last_result = None
 
     def memo_plus(self, number=None):
         if len(self.memory) < 3:
