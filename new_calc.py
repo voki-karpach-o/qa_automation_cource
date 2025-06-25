@@ -1,4 +1,3 @@
-import re
 import time
 from basic_calc import BasicCalc
 
@@ -44,131 +43,57 @@ def initialize_factorial_cache(cache, limit=100):
 class NewCalc(BasicCalc):
     memory = []
 
-    def log_operation(self, operation_type, arguments, result_val):
+    @staticmethod
+    def log_operation(operation_type, arguments, result_val):
+        # Логирование операции
         log_entry = {
             "Операция": operation_type,
             "Аргументы": arguments,
             "Результат": result_val
         }
+        # Записываем логи в файл
         with open("calculator_log.txt", "a", encoding="utf-8") as log_file_op:
             log_file_op.write(str(log_entry) + "\n")
 
-    @staticmethod
-    def memo_plus(number=None):
-        try:
-            if len(NewCalc.memory) < 3:
-                NewCalc.memory.append(number)
-                print(f'Добавлено значение: {number}')
-            else:
-                raise ValueError
-        except ValueError:
-            print('Все ячейки памяти заполнены, новые значения не будут сохраняться!')
+    def memo_plus(self, number=None):
+        if len(self.memory) < 3:
+            self.memory.append(number)
+            self.log_operation("memo_plus", [number], None)
+        else:
+            raise MemoryError("Все ячейки памяти заполнены!")
 
-    @staticmethod
-    def memo_minus():
-        try:
-            if NewCalc.memory:
-                removed = NewCalc.memory.pop()
-                print(f'Удалено значение: {removed}')
-            else:
-                raise ValueError
-        except ValueError:
-            print('Значений в памяти нет!')
-
-    def reset_flags(self):
-        self.flag_expression = False
-        self.flag_sp = False
+    def memo_minus(self):
+        if self.memory:
+            removed = self.memory.pop()
+            self.log_operation("memo_minus", [removed], None)
+            print(f'Удалено значение: {removed}')
+        else:
+            raise ValueError("Значений в памяти нет!")
 
     @property
     def top_memory(self):
         if len(self.memory) > 0:
-            return self.memory[-1]
+            top_value = self.memory[-1]
+            self.log_operation("top_memory", [], top_value)
+            return top_value
         else:
-            return 'Список пуст!'
+            raise IndexError("Список пуст!")
 
-    def check_input(self):
-        match = re.fullmatch(self.pattern, self.num_1)
-        if match:
-            first_num, _, op, second_num, _ = match.groups()
-            first_num = float(first_num)
-            second_num = float(second_num)
-            result_expr = self.operations[op](first_num, second_num)
-            print(result_expr)
-            self.flag_expression = True
-            self.last_result = result_expr
-            BasicCalc.last_result = result_expr
-            self.log_operation("выражение", (first_num, second_num), result_expr)
-            return result_expr
-
-        while True:
-            for ch in self.num_1:
-                ch.replace('.', '', 1)
-                if ch.isalpha() or ch == '.':
-                    print(f'Некорректное значение "{self.num_1}", заменено на 0')
-                    self.num_1 = '0'
-                    break
-
-            if len(self.num_1) > 1 and ' ' in self.num_1:
-                self.num_1 = [int(n) for n in self.num_1.split()]
-                self.flag_sp = True
-                break
-            else:
-                self.num_1 = float(self.num_1)
-                break
-
-        while True:
-            if self.flag_sp is False:
-                for ch in self.num_2:
-                    ch.replace('.', '', 1)
-                    if ch.isalpha() or ch == '.':
-                        print(f'Некорректное значение "{self.num_2}", заменено на 0')
-                        self.num_2 = '0'
-                        break
-
-                self.num_2 = float(self.num_2)
-                break
+    def check_and_calculate_result(self):
+        calculated_result = super().check_and_calculate_result()
+        if calculated_result is not None:
+            self.log_operation("выражение", (self.num_1, self.num_2), calculated_result)
+        return calculated_result
 
 
 if __name__ == "__main__":
     calc = NewCalc()
+    calc.input_info()
 
     factorial_cache = {}
     initialize_factorial_cache(factorial_cache)
 
-    while True:
-        start_off_value_input = input(
-            'Введи "Начать" или "Продолжить" чтобы начать или продолжить, "Факториал" чтобы вычислить, '
-            '"Выйти" чтобы выйти, "Значение", "Удалить" чтобы удалить последнее значение: ').strip().upper()
-
-        if start_off_value_input in ('ПРОДОЛЖИТЬ', 'НАЧАТЬ'):
-            with ExecutionTimer():
-                calc.set_info()
-                result = calc.check_input()
-
-                if result is not None:
-                    calc.memo_plus(result)
-                else:
-                    result = calc.calculate_result()
-                    calc.log_operation(calc.operation, (calc.num_1, calc.num_2), result)
-                    calc.memo_plus(result)
-
-        elif start_off_value_input == 'ФАКТОРИАЛ':
-            try:
-                num = int(input("Введите число для вычисления факториала: "))
-                with ExecutionTimer():
-                    result_fact = factorial_recursive(num)
-                print(f"Факториал {num} = {result_fact}")
-            except Exception as e:
-                print(f"Ошибка: {e}")
-
-        elif start_off_value_input == 'УДАЛИТЬ':
-            calc.memo_minus()
-
-        elif start_off_value_input == 'ВЫЙТИ':
-            break
-
-        elif start_off_value_input == 'ЗНАЧЕНИЕ':
-            print(calc.top_memory)
-
-        else:
-            print('Введите только "Продолжить", "Удалить", "Факториал", "Выйти" или "Значение"!')
+    try:
+        result = calc.check_and_calculate_result()
+    except (MemoryError, ValueError, IndexError) as e:
+        print(f"Произошла ошибка: {e}")
