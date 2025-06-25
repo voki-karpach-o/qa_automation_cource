@@ -28,8 +28,9 @@ class NewCalc(BasicCalc):
             removed = self.memory.pop()
             self.log_operation("memo_minus", [removed], None)
             print(f'Удалено значение: {removed}')
+            return removed
         else:
-            raise ValueError("Значений в памяти нет!")
+            raise MemoryError("Значений в памяти нет!")
 
     @property
     def top_memory(self):
@@ -38,7 +39,7 @@ class NewCalc(BasicCalc):
             self.log_operation("top_memory", [], top_value)
             return top_value
         else:
-            raise IndexError("Список пуст!")
+            raise MemoryError("Список пуст!")
 
     def check_and_calculate_result(self):
         calculated_result = super().check_and_calculate_result()
