@@ -60,7 +60,9 @@ def initialize_factorial_cache(limit=100):
 class NewCalc(BasicCalc):
     def __init__(self):
         super().__init__()
-        self.memory = []
+        if not hasattr(self, 'memory_initialized'):
+            self.memory = []
+            self.memory_initialized = True
 
     @staticmethod
     def generate_random_numbers():
