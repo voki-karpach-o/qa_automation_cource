@@ -1,10 +1,9 @@
-import re
 import time
 import math
 import random
 from collections import Counter
 from datetime import datetime
-from .basic_calc import BasicCalc
+from basic_calc import BasicCalc
 
 
 class ExecutionTimer:
@@ -17,42 +16,45 @@ class ExecutionTimer:
         print(f" Время выполнения операции: {duration:.4f} секунд")
 
 
+factorial_cache = {}
+
+
 def cache_result(func):
-    cache = {}
 
-    def wrapper(*args, **kwargs):
-        if (args, tuple(kwargs.items())) in cache:
-            print("Результат взят из кэша")
-            return cache[(args, tuple(kwargs.items()))]
+    def wrapper(n):
+        if n in factorial_cache:
+            print(f"  -> Факториал {n} взят из кэша")
+            return factorial_cache[n]
         else:
-            calculated_result = func(*args, **kwargs)
-            cache[(args, tuple(kwargs.items()))] = calculated_result
+            print("  -> Вычисляем факториал {n}")
+            calculated_result = func(n)
+            factorial_cache[n] = calculated_result
             return calculated_result
-
     return wrapper
 
 
 @cache_result
 def factorial_recursive(n):
+    if n < 0:
+        raise ValueError("Факториал определен только для неотрицательных чисел")
     if n == 0 or n == 1:
         return 1
     return n * factorial_recursive(n - 1)
 
 
-@cache_result
 def factorial_regular(n):
+    if n < 0:
+        raise ValueError("Факториал определен только для неотрицательных чисел")
     if n == 0 or n == 1:
         return 1
     return math.factorial(n)
 
 
-def initialize_factorial_cache(cache, limit=100):
+def initialize_factorial_cache(limit=100):
     for i in range(limit + 1):
-        cache[(i,)] = factorial_recursive(i)
-        print(f"Факториал рекурсивный {i} инициализирован в кэш.")
+        yield f"Рекурсивный факториал {i} посчитан и добавлен в кэш. Результат: {factorial_recursive(i)}"
     for i in range(limit + 1):
-        cache[(i,)] = factorial_regular(i)
-        print(f"Факториал обыкновенный {i} инициализирован в кэш.")
+        yield f"Обычный факториал {i} посчитан и добавлен в кэш. Результат: {factorial_regular(i)}"
 
 
 class NewCalc(BasicCalc):
@@ -62,101 +64,65 @@ class NewCalc(BasicCalc):
 
     @staticmethod
     def generate_random_numbers():
-        random_value = []
-        for n in range(100):
-            random_value.append(random.randint(0, 100))
-        count_value = Counter(random_value)
-
-        for key_value, count_value in count_value.items():
-            print(f"Число {key_value} встречается {count_value} раз")
+        random_value = [random.randint(0, 10) for _ in range(100)]
+        counts = Counter(random_value)
+        for number, count in sorted(counts.items()):
+            print(f"  Число {number} встречается {count} раз")
 
     @staticmethod
-    def log_operation(operation_type, arguments, result_val, log_file_path):
-        date_logging = datetime.now().date().strftime("%Y.%m.%d")
-        time_logging = datetime.now().time().strftime("%H:%M:%S")
+    def log_operation(operation_type, arguments, result_val):
+        now = datetime.now()
 
         log_entry = {
             "Операция": operation_type,
             "Аргументы": arguments,
             "Результат": result_val,
-            "Дата": date_logging,
-            "Время": time_logging
+            "Дата": now.strftime("%Y.%m.%d"),
+            "Время": now.strftime("%H:%M:%S")
         }
-
-        with open(log_file_path, "a", encoding="utf-8") as log_file_op:
+        with open("calculator_log.txt", "a", encoding="utf-8") as log_file_op:
             log_file_op.write(str(log_entry) + "\n")
 
     def memo_plus(self, number=None):
         if len(self.memory) < 3:
-            return self.memory.append(number)
+            self.memory.append(number)
+            self.log_operation("memo_plus", [number], None)
         else:
-            print('Все ячейки памяти заполнены, новые значения не будут сохраняться!')
+            raise MemoryError("Все ячейки памяти заполнены!")
 
     def memo_minus(self):
         if self.memory:
             removed = self.memory.pop()
+            self.log_operation("memo_minus", [removed], None)
             print(f'Удалено значение: {removed}')
+            return removed
         else:
-            print('Значений в памяти нет!')
+            raise MemoryError("Значений в памяти нет!")
 
     @property
     def top_memory(self):
         if len(self.memory) > 0:
-            return self.memory[-1]
+            top_value = self.memory[-1]
+            self.log_operation("top_memory", [], top_value)
+            return top_value
         else:
-            return 'Список пуст!'
+            raise MemoryError("Список пуст!")
 
-    def calculate_result(self):
-        match = re.fullmatch(self.pattern, self.num_1)
-        if match:
-            first_num, _, op, second_num, _ = match.groups()
-            first_num = float(first_num)
-            second_num = float(second_num)
-            result_expr = self.operations[op](first_num, second_num)
-            print(result_expr)
-            self.flag_expression = True
-            self.last_result = result_expr
-            BasicCalc.last_result = result_expr
-            self.log_operation("выражение", (first_num, second_num), result_expr)
-            return result_expr
-
-        try:
-            for n in self.num_1:
-                n.replace('.', '', 1)
-                if n.isalpha() or n == '.':
-                    self.num_1_invalid = True
-                    raise ValueError
-
-                if len(self.num_1) > 1 and ' ' in self.num_1:
-                    self.num_1 = [int(n) for n in self.num_1]
-                    self.flag_sp = True
-
-                else:
-                    self.num_1 = float(self.num_1)
-
-        except ValueError:
-            print(f'Некорректное значение "{self.num_1}"')
-
-        try:
-            if self.flag_sp is False:
-                for n in self.num_2:
-                    n.replace('.', '', 1)
-                    if n.isalpha() or n == '.':
-                        self.num_2_invalid = True
-                        raise ValueError
-
-                    else:
-                        self.num_2 = float(self.num_2)
-
-        except ValueError:
-            print(f'Некорректное значение "{self.num_2}"')
+    def check_and_calculate_result(self):
+        calculated_result = super().check_and_calculate_result()
+        if calculated_result is not None:
+            self.log_operation("выражение", (self.num_1, self.num_2), calculated_result)
+        return calculated_result
 
 
 if __name__ == "__main__":
+
     calc = NewCalc()
-
-    factorial_cache = {}
-    initialize_factorial_cache(factorial_cache)
-
     calc.input_info()
-    calc.memo_plus(calc.calculate_result())
+
+    try:
+        result = calc.check_and_calculate_result()
+    except MemoryError as e:
+        print(f"Ошибка при работе с памятью: {e}")
+    except ValueError as e:
+        print(f"Ошибка ввода или вычисления: {e}")
