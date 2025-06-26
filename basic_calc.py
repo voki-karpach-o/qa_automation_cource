@@ -2,34 +2,22 @@ import re
 
 
 class BasicCalc:
-    _instance = None
     pattern = r'^(\d+(\.\d+)?)([+\-*/])(\d+(\.\d+)?)$'
 
-    def __new__(cls, *args, **kwargs):
-        # Если экземпляр уже существует, просто возвращаем его
-        if not cls._instance:
-            cls._instance = super().__new__(cls, *args, **kwargs)
-        return cls._instance
-
     def __init__(self):
-        if not hasattr(self, 'initialized'):
-            self.initialized = True
-            self.flag_expression = False
-            self.flag_sp = False
-            self.num_1_invalid = False
-            self.num_2_invalid = False
-            self.operation = None
-            self.num_1 = None
-            self.num_2 = None
-            self.pattern = BasicCalc.pattern
-            self.last_result = None
+        self.flag_expression = False
+        self.operation = None
+        self.num_1 = None
+        self.num_2 = None
+        self.pattern = BasicCalc.pattern
+        self.last_result = None
 
-            self.operations = {
-                '+': self.calc_add,
-                '-': self.calc_subtract,
-                '*': self.calc_multiply,
-                '/': self.calc_divide
-            }
+        self.operations = {
+            '+': self.calc_add,
+            '-': self.calc_subtract,
+            '*': self.calc_multiply,
+            '/': self.calc_divide
+        }
 
     @staticmethod
     def calc_multiply(first, second=None):
@@ -66,55 +54,37 @@ class BasicCalc:
             first_num, _, operation, second_num, _ = match.groups()
             first_num = float(first_num)
             second_num = float(second_num)
-            result = self.operations[operation](first_num, second_num)
-            print(result)
+            calculated_result = self.operations[operation](first_num, second_num)
+            print(calculated_result)
             self.flag_expression = True
-            self.last_result = result
-            return result
+            self.last_result = calculated_result
+            return calculated_result
 
-        try:
-            for n in self.num_1:
-                n.replace('.', '', 1)
-                if n.isalpha() or n == '.':
-                    self.num_1_invalid = True
-                    raise ValueError
+        else:
+            try:
+                self.num_1 = float(self.num_1)
+            except ValueError:
+                print(f"Невалидное значение для первого числа ('{self.num_1}')! Заменено на 0.")
+                self.num_1 = 0
 
-                if len(self.num_1) > 1 and ' ' in self.num_1:
-                    self.num_1 = [int(n) for n in self.num_1]
-                    self.flag_sp = True
+            try:
+                self.num_2 = float(self.num_2)
+            except ValueError:
+                print(f"Невалидное значение для второго числа ('{self.num_2}')! Заменено на 0.")
+                self.num_2 = 0
 
-                else:
-                    self.num_1 = float(self.num_1)
-
-        except ValueError:
-            print(f'Некорректное значение "{self.num_1}"')
-
-        try:
-            if self.flag_sp is False:
-                for n in self.num_2:
-                    n.replace('.', '', 1)
-                    if n.isalpha() or n == '.':
-                        self.num_2_invalid = True
-                        raise ValueError
-
-                    else:
-                        self.num_2 = float(self.num_2)
-
-        except ValueError:
-            print(f'Некорректное значение "{self.num_2}"')
-
-        if self.flag_expression is False and not self.num_1_invalid and not self.num_2_invalid:
-            if self.flag_sp:
-                result = self.operations[self.operation](self.num_1)
-            else:
-                result = self.operations[self.operation](self.num_1, self.num_2)
-
-            print(result)
-            self.last_result = result
-            return result
+        if self.flag_expression is False:
+            calculated_result = self.operations[self.operation](self.num_1, self.num_2)
+            print(calculated_result)
+            self.last_result = calculated_result
+            return calculated_result
 
 
 if __name__ == '__main__':
     calc = BasicCalc()
     calc.input_info()
-    calc.check_and_calculate_result()
+
+    try:
+        result = calc.check_and_calculate_result()
+    except (MemoryError, ValueError, IndexError) as e:
+        print(f"Произошла ошибка: {e}")
