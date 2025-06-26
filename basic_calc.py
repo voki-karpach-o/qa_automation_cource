@@ -38,7 +38,10 @@ class BasicCalc:
 
     @staticmethod
     def calc_add(first, second=None):
-        return first + second
+        if second is None:
+            return sum(first)
+        else:
+            return first + second
 
     def input_info(self):
         self.num_1 = input('Введи цифру или математическое выражение без пробелов: ')
