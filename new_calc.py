@@ -12,36 +12,42 @@ class ExecutionTimer:
         print(f" Время выполнения операции: {duration:.4f} секунд")
 
 
+factorial_cache = {}
+
+
 def cache_result(func):
-    cache = {}
 
     def wrapper(*args, **kwargs):
-        if (args, tuple(kwargs.items())) in cache:
-            print("Результат взят из кэша")  # Сообщение о кэшировании
-            return cache[(args, tuple(kwargs.items()))]
+        key = (args, tuple(kwargs.items()))
+        if key in factorial_cache:
+            print("  -> Результат взят из кэша")
+            return factorial_cache[key]
         else:
+            print("  -> Вычисляем результат...")
             calculated_result = func(*args, **kwargs)
-            cache[(args, tuple(kwargs.items()))] = calculated_result
+            factorial_cache[key] = calculated_result
             return calculated_result
-
     return wrapper
 
 
 @cache_result
 def factorial_recursive(n):
+    if n < 0:
+        raise ValueError("Факториал определен только для неотрицательных чисел")
     if n == 0 or n == 1:
         return 1
     return n * factorial_recursive(n - 1)
 
 
-def initialize_factorial_cache(cache, limit=100):
+def initialize_factorial_cache(limit=100):
     for i in range(limit + 1):
-        cache[(i,)] = factorial_recursive(i)
-        print(f"Факториал {i} инициализирован в кэш.")
+        yield f"Факториал {i} посчитан и добавлен в кэш. Результат: {factorial_recursive(i)}"
 
 
 class NewCalc(BasicCalc):
-    memory = []
+    def __init__(self):
+        super().__init__()
+        self.memory = []
 
     @staticmethod
     def log_operation(operation_type, arguments, result_val):
@@ -67,8 +73,9 @@ class NewCalc(BasicCalc):
             removed = self.memory.pop()
             self.log_operation("memo_minus", [removed], None)
             print(f'Удалено значение: {removed}')
+            return removed
         else:
-            raise ValueError("Значений в памяти нет!")
+            raise MemoryError("Значений в памяти нет!")
 
     @property
     def top_memory(self):
@@ -77,7 +84,7 @@ class NewCalc(BasicCalc):
             self.log_operation("top_memory", [], top_value)
             return top_value
         else:
-            raise IndexError("Список пуст!")
+            raise MemoryError("Список пуст!")
 
     def check_and_calculate_result(self):
         calculated_result = super().check_and_calculate_result()
@@ -87,13 +94,16 @@ class NewCalc(BasicCalc):
 
 
 if __name__ == "__main__":
+    for _ in initialize_factorial_cache(limit=10):
+        pass
+    print("Инициализация кэша завершена.")
+
     calc = NewCalc()
     calc.input_info()
 
-    factorial_cache = {}
-    initialize_factorial_cache(factorial_cache)
-
     try:
         result = calc.check_and_calculate_result()
-    except (MemoryError, ValueError, IndexError) as e:
-        print(f"Произошла ошибка: {e}")
+    except MemoryError as e:
+        print(f"Ошибка при работе с памятью: {e}")
+    except ValueError as e:
+        print(f"Ошибка ввода или вычисления: {e}")
