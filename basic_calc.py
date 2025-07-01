@@ -2,22 +2,30 @@ import re
 
 
 class BasicCalc:
+    _instance = None
     pattern = r'^(\d+(\.\d+)?)([+\-*/])(\d+(\.\d+)?)$'
 
-    def __init__(self):
-        self.flag_expression = False
-        self.operation = None
-        self.num_1 = None
-        self.num_2 = None
-        self.pattern = BasicCalc.pattern
-        self.last_result = None
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super().__new__(cls, *args, **kwargs)
+        return cls._instance
 
-        self.operations = {
-            '+': self.calc_add,
-            '-': self.calc_subtract,
-            '*': self.calc_multiply,
-            '/': self.calc_divide
-        }
+    def __init__(self):
+        if not hasattr(self, 'initialized'):
+            self.initialized = True
+            self.operation = None
+            self.num_1 = None
+            self.num_2 = None
+            self.last_result = None
+            self.flag_expression = False
+            self.pattern = BasicCalc.pattern
+
+            self.operations = {
+                '+': self.calc_add,
+                '-': self.calc_subtract,
+                '*': self.calc_multiply,
+                '/': self.calc_divide
+            }
 
     @staticmethod
     def calc_multiply(first, second=None):
@@ -81,6 +89,11 @@ class BasicCalc:
 
 
 if __name__ == '__main__':
+    print("--- Демонстрация Синглтона ---")
+    calc_1 = BasicCalc()
+    calc_2 = BasicCalc()
+    print(f"calc1 это тот же объект, что и calc2? -> {calc_1 is calc_2}")
+
     calc = BasicCalc()
     calc.input_info()
 

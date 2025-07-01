@@ -1,4 +1,8 @@
 import time
+import math
+import random
+from collections import Counter
+from datetime import datetime
 from basic_calc import BasicCalc
 
 
@@ -17,15 +21,14 @@ factorial_cache = {}
 
 def cache_result(func):
 
-    def wrapper(*args, **kwargs):
-        key = (args, tuple(kwargs.items()))
-        if key in factorial_cache:
-            print("  -> Результат взят из кэша")
-            return factorial_cache[key]
+    def wrapper(n):
+        if n in factorial_cache:
+            print(f"  -> Факториал {n} взят из кэша")
+            return factorial_cache[n]
         else:
-            print("  -> Вычисляем результат...")
-            calculated_result = func(*args, **kwargs)
-            factorial_cache[key] = calculated_result
+            print("  -> Вычисляем факториал {n}")
+            calculated_result = func(n)
+            factorial_cache[n] = calculated_result
             return calculated_result
     return wrapper
 
@@ -39,25 +42,46 @@ def factorial_recursive(n):
     return n * factorial_recursive(n - 1)
 
 
+def factorial_regular(n):
+    if n < 0:
+        raise ValueError("Факториал определен только для неотрицательных чисел")
+    if n == 0 or n == 1:
+        return 1
+    return math.factorial(n)
+
+
 def initialize_factorial_cache(limit=100):
     for i in range(limit + 1):
-        yield f"Факториал {i} посчитан и добавлен в кэш. Результат: {factorial_recursive(i)}"
+        yield f"Рекурсивный факториал {i} посчитан и добавлен в кэш. Результат: {factorial_recursive(i)}"
+    for i in range(limit + 1):
+        yield f"Обычный факториал {i} посчитан и добавлен в кэш. Результат: {factorial_regular(i)}"
 
 
 class NewCalc(BasicCalc):
     def __init__(self):
         super().__init__()
-        self.memory = []
+        if not hasattr(self, 'memory_initialized'):
+            self.memory = []
+            self.memory_initialized = True
+
+    @staticmethod
+    def generate_random_numbers():
+        random_value = [random.randint(0, 10) for _ in range(100)]
+        counts = Counter(random_value)
+        for number, count in sorted(counts.items()):
+            print(f"  Число {number} встречается {count} раз")
 
     @staticmethod
     def log_operation(operation_type, arguments, result_val):
-        # Логирование операции
+        now = datetime.now()
+
         log_entry = {
             "Операция": operation_type,
             "Аргументы": arguments,
-            "Результат": result_val
+            "Результат": result_val,
+            "Дата": now.strftime("%Y.%m.%d"),
+            "Время": now.strftime("%H:%M:%S")
         }
-        # Записываем логи в файл
         with open("calculator_log.txt", "a", encoding="utf-8") as log_file_op:
             log_file_op.write(str(log_entry) + "\n")
 
@@ -94,9 +118,6 @@ class NewCalc(BasicCalc):
 
 
 if __name__ == "__main__":
-    for _ in initialize_factorial_cache(limit=10):
-        pass
-    print("Инициализация кэша завершена.")
 
     calc = NewCalc()
     calc.input_info()
