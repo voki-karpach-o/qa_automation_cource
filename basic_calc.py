@@ -2,7 +2,7 @@ import re
 
 
 class BasicCalc:
-    pattern = r'^(\d+(?:\.\d+)?)\s*([+\-*/])\s*(\d+(?:\.\d+)?)$'
+    pattern = r'^(\d+(\.\d+)?)([+\-*/])(\d+(\.\d+)?)$'
 
     def __init__(self):
         self.flag_expression = False
@@ -10,6 +10,7 @@ class BasicCalc:
         self.num_1 = None
         self.num_2 = None
         self.pattern = BasicCalc.pattern
+        self.last_result = None
 
         self.operations = {
             '+': self.calc_add,
@@ -37,10 +38,7 @@ class BasicCalc:
 
     @staticmethod
     def calc_add(first, second=None):
-        if second is None:
-            return sum(first)
-        else:
-            return first + second
+        return first + second
 
     def input_info(self):
         self.num_1 = input('Введи цифру или математическое выражение без пробелов: ')
@@ -50,21 +48,32 @@ class BasicCalc:
     def check_and_calculate_result(self):
         match = re.fullmatch(self.pattern, self.num_1)
         if match:
-            first_num, operation, second_num = match.groups()
+            first_num, _, operation, second_num, _ = match.groups()
             first_num = float(first_num)
             second_num = float(second_num)
             calculated_result = self.operations[operation](first_num, second_num)
             print(calculated_result)
             self.flag_expression = True
+            self.last_result = calculated_result
             return calculated_result
 
         else:
-            self.num_1 = float(self.num_1)
-            self.num_2 = float(self.num_2)
+            try:
+                self.num_1 = float(self.num_1)
+            except ValueError:
+                print(f"Невалидное значение для первого числа ('{self.num_1}')! Заменено на 0.")
+                self.num_1 = 0
+
+            try:
+                self.num_2 = float(self.num_2)
+            except ValueError:
+                print(f"Невалидное значение для второго числа ('{self.num_2}')! Заменено на 0.")
+                self.num_2 = 0
 
         if self.flag_expression is False:
             calculated_result = self.operations[self.operation](self.num_1, self.num_2)
             print(calculated_result)
+            self.last_result = calculated_result
             return calculated_result
 
 
@@ -74,5 +83,5 @@ if __name__ == '__main__':
 
     try:
         result = calc.check_and_calculate_result()
-    except ValueError as v:
-        print(f"Произошла ошибка ввода: {v}")
+    except (MemoryError, ValueError, IndexError) as e:
+        print(f"Произошла ошибка: {e}")

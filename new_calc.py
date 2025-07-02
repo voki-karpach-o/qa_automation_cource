@@ -1,63 +1,60 @@
 from basic_calc import BasicCalc
-import re
 
 
 class NewCalc(BasicCalc):
+    memory = []
 
-    def __init__(self):
-        super().__init__()
-        self.memory = []
-        self.last_result = None
+    @staticmethod
+    def log_operation(operation_type, arguments, result_val):
+        # Логирование операции
+        log_entry = {
+            "Операция": operation_type,
+            "Аргументы": arguments,
+            "Результат": result_val
+        }
+        # Записываем логи в файл
+        with open("calculator_log.txt", "a", encoding="utf-8") as log_file_op:
+            log_file_op.write(str(log_entry) + "\n")
 
     def memo_plus(self, number=None):
         if len(self.memory) < 3:
-            return self.memory.append(number)
+            self.memory.append(number)
+            self.log_operation("memo_plus", [number], None)
         else:
-            raise MemoryError("Ячейки памяти заполнены!")
+            raise MemoryError("Все ячейки памяти заполнены!")
 
     def memo_minus(self):
         if self.memory:
             removed = self.memory.pop()
+            self.log_operation("memo_minus", [removed], None)
             print(f'Удалено значение: {removed}')
+            return removed
         else:
-            raise ValueError("Значений в памяти нет!")
+            raise MemoryError("Значений в памяти нет!")
 
     @property
     def top_memory(self):
         if len(self.memory) > 0:
-            return self.memory[-1]
+            top_value = self.memory[-1]
+            self.log_operation("top_memory", [], top_value)
+            return top_value
         else:
-            raise IndexError("Список пуст!")
+            raise MemoryError("Список пуст!")
 
     def check_and_calculate_result(self):
-        match = re.fullmatch(self.pattern, self.num_1)
-        if match:
-            super().check_and_calculate_result()
-
-        else:
-            try:
-                self.num_1 = float(self.num_1)
-            except ValueError:
-                print(f"Невалидное значение для первого числа ('{self.num_1}')! Заменено на 0.")
-                self.num_1 = 0
-
-            try:
-                self.num_2 = float(self.num_2)
-            except ValueError:
-                print(f"Невалидное значение для второго числа ('{self.num_2}')! Заменено на 0.")
-                self.num_2 = 0
-
-            calculated_result = self.operations[self.operation](self.num_1, self.num_2)
-            print(calculated_result)
-            self.last_result = calculated_result
-            return calculated_result
+        calculated_result = super().check_and_calculate_result()
+        if calculated_result is not None:
+            self.log_operation("выражение", (self.num_1, self.num_2), calculated_result)
+        return calculated_result
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     calc = NewCalc()
     calc.input_info()
 
     try:
         result = calc.check_and_calculate_result()
-    except (MemoryError, ValueError, IndexError) as e:
-        print(f"Произошла ошибка: {e}")
+    except MemoryError as e:
+        print(f"Ошибка при работе с памятью: {e}")
+    except ValueError as e:
+        print(f"Ошибка ввода или вычисления: {e}")
