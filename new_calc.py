@@ -13,7 +13,7 @@ class NewCalc(BasicCalc):
         if len(self.memory) < 3:
             return self.memory.append(number)
         else:
-            raise MemoryError("Все ячейки памяти заполнены!")
+            raise MemoryError("Ячейки памяти заполнены!")
 
     def memo_minus(self):
         if self.memory:
