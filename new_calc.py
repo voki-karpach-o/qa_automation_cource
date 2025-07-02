@@ -1,18 +1,85 @@
+import time
+import math
+import random
+from collections import Counter
+from datetime import datetime
 from basic_calc import BasicCalc
 
 
+class ExecutionTimer:
+    def __enter__(self):
+        self.start_time = time.time()
+        return self.start_time
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        duration = time.time() - self.start_time
+        print(f" Время выполнения операции: {duration:.4f} секунд")
+
+
+factorial_cache = {}
+
+
+def cache_result(func):
+
+    def wrapper(n):
+        if n in factorial_cache:
+            print(f"  -> Факториал {n} взят из кэша")
+            return factorial_cache[n]
+        else:
+            print("  -> Вычисляем факториал {n}")
+            calculated_result = func(n)
+            factorial_cache[n] = calculated_result
+            return calculated_result
+    return wrapper
+
+
+@cache_result
+def factorial_recursive(n):
+    if n < 0:
+        raise ValueError("Факториал определен только для неотрицательных чисел")
+    if n == 0 or n == 1:
+        return 1
+    return n * factorial_recursive(n - 1)
+
+
+def factorial_regular(n):
+    if n < 0:
+        raise ValueError("Факториал определен только для неотрицательных чисел")
+    if n == 0 or n == 1:
+        return 1
+    return math.factorial(n)
+
+
+def initialize_factorial_cache(limit=100):
+    for i in range(limit + 1):
+        yield f"Рекурсивный факториал {i} посчитан и добавлен в кэш. Результат: {factorial_recursive(i)}"
+    for i in range(limit + 1):
+        yield f"Обычный факториал {i} посчитан и добавлен в кэш. Результат: {factorial_regular(i)}"
+
+
 class NewCalc(BasicCalc):
-    memory = []
+    def __init__(self):
+        super().__init__()
+        self.memory = []
+
+    @staticmethod
+    def generate_random_numbers():
+        random_value = [random.randint(0, 10) for _ in range(100)]
+        counts = Counter(random_value)
+        for number, count in sorted(counts.items()):
+            print(f"  Число {number} встречается {count} раз")
 
     @staticmethod
     def log_operation(operation_type, arguments, result_val):
-        # Логирование операции
+        now = datetime.now()
+
         log_entry = {
             "Операция": operation_type,
             "Аргументы": arguments,
-            "Результат": result_val
+            "Результат": result_val,
+            "Дата": now.strftime("%Y.%m.%d"),
+            "Время": now.strftime("%H:%M:%S")
         }
-        # Записываем логи в файл
         with open("calculator_log.txt", "a", encoding="utf-8") as log_file_op:
             log_file_op.write(str(log_entry) + "\n")
 
@@ -49,6 +116,7 @@ class NewCalc(BasicCalc):
 
 
 if __name__ == "__main__":
+
     calc = NewCalc()
     calc.input_info()
 
