@@ -16,7 +16,6 @@ factorial_cache = {}
 
 
 def cache_result(func):
-
     def wrapper(*args, **kwargs):
         key = (args, tuple(kwargs.items()))
         if key in factorial_cache:
@@ -27,6 +26,7 @@ def cache_result(func):
             calculated_result = func(*args, **kwargs)
             factorial_cache[key] = calculated_result
             return calculated_result
+
     return wrapper
 
 
@@ -40,8 +40,10 @@ def factorial_recursive(n):
 
 
 def initialize_factorial_cache(limit=100):
+    print(f"--- Инициализация кэша до запущена {limit} ---")
     for i in range(limit + 1):
-        yield f"Факториал {i} посчитан и добавлен в кэш. Результат: {factorial_recursive(i)}"
+        factorial_recursive(i)
+    print("--- Инициализация кэша завершена ---")
 
 
 class NewCalc(BasicCalc):
@@ -94,9 +96,7 @@ class NewCalc(BasicCalc):
 
 
 if __name__ == "__main__":
-    for _ in initialize_factorial_cache(limit=10):
-        pass
-    print("Инициализация кэша завершена.")
+    initialize_factorial_cache(limit=10)
 
     calc = NewCalc()
     calc.input_info()
